@@ -1,0 +1,72 @@
+{% extends "global/Base.html" %}
+{% load otree %}
+
+{% block content %}
+<div class="game-header">
+    <h1>The Project Task</h1>
+    <p>You have been grouped with {{ others_count }} other people in the room.</p>
+</div>
+
+{% if player.participant.pgg_treatment == 0 %}
+<div class="instruction-card">
+    <p>
+        You are in a group of <strong>{{ group_size }}</strong> people. You start with
+        <strong>{{ endowment }} NOK</strong>, and decide how much to <strong>contribute</strong>
+        to a shared project: any amount from 0 up to the full {{ endowment }} NOK.
+        Whatever you don't contribute, you keep.
+    </p>
+</div>
+
+<div class="text-center mb-3">
+    <img src="{% static 'PGG/Graph1_0.png' %}" alt="Contribution stage illustration" style="max-width: 100%; border-radius: 14px;">
+</div>
+
+<div class="instruction-card">
+    <p class="mb-0">
+        The group's total contributions are <strong>multiplied by {{ multiplier }}</strong>,
+        then split <strong>equally</strong> among all {{ group_size }} members &mdash;
+        no matter who contributed what.
+    </p>
+</div>
+{% else %}
+<div class="instruction-card">
+    <p>
+        You are in a group of <strong>{{ group_size }}</strong> people. You start with
+        <strong>{{ endowment }} NOK</strong>, and decide how much to <strong>give up</strong>
+        from it into a shared project: any amount from 0 up to the full {{ endowment }} NOK.
+        Whatever you don't give up, you keep.
+    </p>
+</div>
+
+<div class="text-center mb-3">
+    <img src="{% static 'PGG/Graph1_1.png' %}" alt="Contribution stage illustration" style="max-width: 100%; border-radius: 14px;">
+</div>
+
+<div class="instruction-card">
+    <p class="mb-0">
+        The amounts given up by the group are <strong>multiplied by {{ multiplier }}</strong>,
+        then split <strong>equally</strong> among all {{ group_size }} members &mdash;
+        no matter who gave up what.
+    </p>
+</div>
+{% endif %}
+
+<div class="text-center mb-3">
+    <img src="{% static 'PGG/Graph2.png' %}" alt="Distribution stage illustration" style="max-width: 100%; border-radius: 14px;">
+</div>
+
+<div class="instruction-card">
+    <p class="mb-2">Your final earnings:</p>
+    <p class="text-center">
+        <span class="number-pill">
+            Your earnings = (money you kept) + (your equal share of the multiplied project)
+        </span>
+    </p>
+    <p class="mb-0">
+        Example: if the group total is 200 NOK, the project becomes
+        200 &times; {{ multiplier }} = 300 NOK, split equally among all {{ group_size }} members.
+    </p>
+</div>
+
+{% next_button %}
+{% endblock %}

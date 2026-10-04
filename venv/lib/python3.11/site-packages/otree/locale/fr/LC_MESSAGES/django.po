@@ -1,0 +1,187 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2015.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-10-06 19:16+0800\n"
+"PO-Revision-Date: 2015-06-10 09:22+0100\n"
+"Last-Translator: Rousselle Jean-Marc <roussell@supagro.inra.fr>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.11.0\n"
+
+#. Translators: A player's default chat nickname,
+#: ../otree/chat.py:45
+#, python-brace-format
+msgid "Participant {id_in_group}"
+msgstr "Participant {id_in_group}"
+
+#. Translators: the name you see in chat for yourself, for example:
+#. John (Me)
+#: ../otree/chat.py:61
+#, python-brace-format
+msgid "{nickname} (Me)"
+msgstr "{nickname} (Moi)"
+
+#: ../otree/constants.py:79
+msgid "This field is required."
+msgstr "Ce champ est nécessaire"
+
+#. Translators: display a number of points,
+#. like "1 point", "2 points", ...
+#. See "Plural-Forms" above for pluralization rules
+#. in this language.
+#. Explanation at http://bit.ly/1IurMu7
+#. In most languages, msgstr[0] is singular,
+#. and msgstr[1] is plural
+#. the {} represents the number;
+#. don't forget to include it in your translation
+#: ../otree/currency.py:202
+msgid "{} point"
+msgid_plural "{} points"
+msgstr[0] "{} point"
+msgstr[1] "{} points"
+
+#: ../otree/forms/forms.py:200
+msgid "Yes"
+msgstr "Oui"
+
+#: ../otree/forms/forms.py:200
+msgid "No"
+msgstr "Non"
+
+#: ../otree/forms/multistring.py:67
+#, python-format
+msgid "'%(value)s' is not a valid choice for this field"
+msgstr "'%(value)s' n'est pas un choix valide pour ce champ"
+
+#. Translators: the label next to a "points" input field
+#: ../otree/forms/widgets.py:84
+msgid "points"
+msgstr "points"
+
+#: ../otree/templates/otree/GBATInactive.html:3
+msgid "Paused"
+msgstr "En pause"
+
+#: ../otree/templates/otree/GBATInactive.html:15
+msgid "The button was not clicked within the requested time."
+msgstr "Le bouton n'a pas été cliqué dans le délai demandé."
+
+#: ../otree/templates/otree/GBATInactive.html:17
+msgid "To return to the wait page, click the button below."
+msgstr "Pour revenir à la page d'attente, cliquez sur le bouton ci-dessous."
+
+#: ../otree/templates/otree/GBATInactive.html:22
+msgid "Return to wait page"
+msgstr "Retour à la page d'attente"
+
+#: ../otree/templates/otree/Page.html:30
+msgid "Please fix the errors."
+msgstr "S'il vous plaît, veuillez corriger les erreurs."
+
+#: ../otree/templates/otree/RoomWelcomePage.html:6
+#: ../otree/templates/otree/RoomWelcomePage.html:13
+msgid "Welcome"
+msgstr "Bienvenue"
+
+#: ../otree/templates/otree/RoomWelcomePage.html:18
+msgid "This participant label was not found"
+msgstr "Label de participant introuvable"
+
+#: ../otree/templates/otree/RoomWelcomePage.html:19
+msgid "Participant label:"
+msgstr "Étiquette du participant :"
+
+#: ../otree/templates/otree/RoomWelcomePage.html:25
+msgid "Click the button to start."
+msgstr "Cliquez sur le bouton pour commencer."
+
+#: ../otree/templates/otree/RoomWelcomePage.html:27
+msgid "Start"
+msgstr "Commencer"
+
+#: ../otree/templates/otree/WaitPage.html:68
+msgid "Click the below button within ${secondsLeftSpan} seconds."
+msgstr "Cliquez sur le bouton ci-dessous dans ${secondsLeftSpan} secondes."
+
+#: ../otree/templates/otree/WaitPage.html:75
+msgid "Please confirm"
+msgstr "Veuillez confirmer"
+
+#: ../otree/templates/otree/WaitPageBase.html:85
+msgid "An error occurred."
+msgstr "Une erreur s'est produite"
+
+#: ../otree/templates/otree/WaitPageBase.html:89
+msgid "Are you still there?"
+msgstr "Êtes-vous toujours là ?"
+
+#: ../otree/templates/otree/WaitPageBase.html:92
+msgid "I'm still active"
+msgstr "Je suis toujours actif"
+
+#: ../otree/templates/otree/tags/chat.html:9
+msgid "Send"
+msgstr "Envoyer"
+
+#. Translators: the text of the 'next' button
+#: ../otree/templating/nodes.py:849
+msgid "Next"
+msgstr "Suivant"
+
+#. Translators: the text of the 'back' button
+#: ../otree/templating/nodes.py:864
+msgid "Back"
+msgstr "Retour"
+
+#: ../otree/views/abstract.py:168
+msgid "Powered by {product_name}"
+msgstr "Généré par {product_name}"
+
+#: ../otree/views/abstract.py:903
+msgid "Time left to complete this page:"
+msgstr "Temps restant pour compléter cette page:"
+
+#. Translators: the default title of a wait page
+#: ../otree/views/abstract.py:932 ../otree/views/participant.py:320
+msgid "Please wait"
+msgstr "Veuillez patienter"
+
+#: ../otree/views/abstract.py:1309
+msgid "Waiting to form a group with other participants."
+msgstr "En attente de former un groupe avec d'autres participants."
+
+#: ../otree/views/abstract.py:1313
+msgid "Waiting for the other participants."
+msgstr "En attente des autres participants."
+
+#: ../otree/views/abstract.py:1315
+msgid "Waiting for the other participant."
+msgstr "En attente de l'autre participant."
+
+#. Translators: for example this is shown if you create a session for 10
+#. participants. The 11th person to click will get this message
+#. It means there is no space for you.
+#: ../otree/views/participant.py:37
+msgid "Session is full."
+msgstr "Session complète"
+
+#: ../otree/views/participant.py:321
+msgid "Waiting for your session to begin"
+msgstr "En attendant le début de votre session"
+
+#~ msgid "Please enter your participant label."
+#~ msgstr "Veuillez saisir votre label de participant"
+
+#~ msgid "Click the below button within ${secondsLeft} seconds."
+#~ msgstr ""
+

@@ -1,0 +1,31 @@
+{% extends "global/Base.html" %}
+{% load otree %}
+
+{% block content %}
+<div class="game-header">
+    <h1>Earnings from the <i>task</i></h1>
+</div>
+
+<div class="instruction-card">
+    <p>
+        You just completed the <i>task</i> in which you completed as many summations as possible in 1 minute.
+        </p>
+    <p>We will not disclose your score just yet. Instead, we will refer to your score as  <span class="number-pill">x</span></p>
+    <p>
+        You will face 2 choices over the next pages which determine how you will receive payment from Game 4.
+        The payment is based on your performance in the task but there are some adjustments.
+    </p>
+        <p>
+        In each choice, you will choose between 2 adjustment regimes.
+             For your payment for Game 4, one of these choices will be chosen at random and your chosen regime in that choice will be carried out.
+    </p>
+    <p>
+
+        Click on next to go to choice 1.
+    </p>
+
+
+</div>
+
+<button type="submit" class="btn btn-primary btn-lg">Continue</button>
+{% endblock %}

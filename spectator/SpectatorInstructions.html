@@ -1,0 +1,41 @@
+{% extends "global/Base.html" %}
+{% load otree %}
+
+{% block content %}
+<div class="game-header">
+    <h1>The Game</h1>
+    <p>Some roles.</p>
+</div>
+
+<div class="instruction-card">
+    <p>
+        In this game, you will be grouped with 2 others. Each of you will then be randomly assigned an identity.
+    </p>
+    <p>
+        Two of the participants in your group will be given the role of <b>workers</b>. The other will be given the role of the <b>spectator</b>.
+    </p>
+    <p>
+        The workers are each given an amount of money.
+        {% if player.treatment == 1 %}
+        The worker with the highest task score (they correctly summed the most 2 digit numbers) will receive 200 NOK.
+        The other worker will receive 50 NOK.
+        {% endif %}
+        {% if player.treatment == 2 %}
+        One worker will be randomly selected to receive 200 NOK, the other will receive 50 NOK.
+        {% endif %}
+        {% if player.treatment == 3 %}
+        The computer will flip a virtual coin to determine how the money is split (you will not see the coin flip outcome).
+        <br><br>
+        <b>If the coin lands on heads,</b> the worker with the highest task score (they correctly summed the most 2 digit numbers) will receive 200 NOK.
+        The other worker will receive 50 NOK.<br>
+        <b>If the coin lands on tails,</b> one worker will be randomly selected to receive 200 NOK, the other will receive 50 NOK.
+        {% endif %}
+    </p>
+    <p>
+        The spectator's task is to decide whether and how to redistribute this money between the workers.
+        The spectator earns a fixed fee of 200 NOK for their task.
+    </p>
+</div>
+
+{% next_button %}
+{% endblock %}

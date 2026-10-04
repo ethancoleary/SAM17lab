@@ -1,0 +1,38 @@
+{% extends "global/Base.html" %}
+{% load otree %}
+
+{% block content %}
+<div class="game-header">
+    <h1>Your Guess (2/2)</h1>
+    <p>Before we move on, we'd like to know how you think you performed.</p>
+</div>
+
+<div class="instruction-card">
+    <p class="mb-0">
+        Now imagine we picked <b>10 participants</b>
+        at random from everyone in this room.
+    </p>
+</div>
+
+<div class="choice-card text-center">
+    <label class="form-label fw-semibold" for="id_guessed_rank">
+        {{ form.guessed_rank.label }}
+    </label>
+    <input
+        type="number"
+        name="guessed_rank"
+        id="id_guessed_rank"
+        class="form-control form-control-lg text-center mb-2"
+        style="max-width: 220px; margin: 0 auto;"
+        min="0"
+        max="{{ n_comparison }}"
+        autocomplete="off"
+        required
+    >
+    {% if form.guessed_rank.errors %}
+    <div class="alert alert-danger mt-2 mb-0">{{ form.guessed_rank.errors }}</div>
+    {% endif %}
+</div>
+
+<button type="submit" class="btn btn-primary btn-lg mt-3">Continue</button>
+{% endblock %}

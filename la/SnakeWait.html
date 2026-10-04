@@ -1,0 +1,175 @@
+{% extends "global/Base.html" %}
+{% load otree %}
+
+{% block content %}
+<style>
+    /* Hide oTree's built-in visible countdown timer, without disabling
+       the underlying countdown/auto-submit JS (the documented approach
+       -- see https://otree.readthedocs.io/en/latest/timeouts.html) */
+    .otree-timer {
+        display: none;
+    }
+
+    /* The Next button is hidden until the 1-minute wait has elapsed. */
+    #snake-next-button-wrapper {
+        display: none;
+    }
+</style>
+
+<div class="game-header">
+    <h1>Please Wait</h1>
+    <p>Waiting for other participants in the room to catch up. </p>
+</div>
+
+<div class="instruction-card text-center">
+    <p class="text-muted mb-2">
+        Feel free to play a quick game of Snake while you wait.
+        The page will move on once the wait is over.
+    </p>
+
+    <div class="mb-2">
+        <span class="text-muted">Score: </span>
+        <span id="snake-score" class="fw-bold">0</span>
+    </div>
+
+    <canvas id="snake-canvas" width="360" height="360"
+        style="background:#0b1f3a; border-radius: 12px; touch-action: none; max-width: 100%;"></canvas>
+
+    <p class="text-muted small mt-2 mb-0">
+        Use the arrow keys (or swipe on mobile) to steer.
+    </p>
+</div>
+
+<div id="snake-next-button-wrapper">
+    {% next_button %}
+</div>
+
+<script>
+(function () {
+    var canvas = document.getElementById('snake-canvas');
+    var ctx = canvas.getContext('2d');
+    var gridSize = 18;
+    var tileCount = canvas.width / gridSize;
+
+    var snake = [{ x: 8, y: 8 }];
+    var velocity = { x: 0, y: 0 };
+    var food = randomFoodPosition();
+    var score = 0;
+    var gameOver = false;
+
+    function randomFoodPosition() {
+        return {
+            x: Math.floor(Math.random() * tileCount),
+            y: Math.floor(Math.random() * tileCount),
+        };
+    }
+
+    function setDirection(dx, dy) {
+        if (velocity.x === -dx && velocity.y === -dy) return; // no reverse
+        velocity = { x: dx, y: dy };
+    }
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowUp') setDirection(0, -1);
+        else if (e.key === 'ArrowDown') setDirection(0, 1);
+        else if (e.key === 'ArrowLeft') setDirection(-1, 0);
+        else if (e.key === 'ArrowRight') setDirection(1, 0);
+    });
+
+    var touchStartX = null;
+    var touchStartY = null;
+    canvas.addEventListener('touchstart', function (e) {
+        var t = e.touches[0];
+        touchStartX = t.clientX;
+        touchStartY = t.clientY;
+    });
+    canvas.addEventListener('touchend', function (e) {
+        if (touchStartX === null) return;
+        var t = e.changedTouches[0];
+        var dx = t.clientX - touchStartX;
+        var dy = t.clientY - touchStartY;
+        if (Math.abs(dx) > Math.abs(dy)) {
+            setDirection(dx > 0 ? 1 : -1, 0);
+        } else {
+            setDirection(0, dy > 0 ? 1 : -1);
+        }
+        touchStartX = null;
+        touchStartY = null;
+    });
+
+    function resetSnake() {
+        snake = [{ x: 8, y: 8 }];
+        velocity = { x: 0, y: 0 };
+        food = randomFoodPosition();
+        score = 0;
+        gameOver = false;
+        document.getElementById('snake-score').textContent = score;
+    }
+
+    function step() {
+        if (gameOver) return;
+        if (velocity.x === 0 && velocity.y === 0) return;
+
+        var head = { x: snake[0].x + velocity.x, y: snake[0].y + velocity.y };
+
+        var hitWall = head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount;
+        var hitSelf = snake.some(function (seg) { return seg.x === head.x && seg.y === head.y; });
+
+        if (hitWall || hitSelf) {
+            gameOver = true;
+            setTimeout(resetSnake, 900);
+            return;
+        }
+
+        snake.unshift(head);
+
+        if (head.x === food.x && head.y === food.y) {
+            score += 1;
+            document.getElementById('snake-score').textContent = score;
+            food = randomFoodPosition();
+        } else {
+            snake.pop();
+        }
+    }
+
+    function draw() {
+        ctx.fillStyle = '#0b1f3a';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = '#c86a11';
+        ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
+
+        ctx.fillStyle = '#1d5fa7';
+        snake.forEach(function (seg, i) {
+            ctx.fillStyle = i === 0 ? '#4a9de8' : '#1d5fa7';
+            ctx.fillRect(seg.x * gridSize, seg.y * gridSize, gridSize - 2, gridSize - 2);
+        });
+
+        if (gameOver) {
+            ctx.fillStyle = 'rgba(0,0,0,0.5)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#fff';
+            ctx.font = '20px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('Game over -- restarting...', canvas.width / 2, canvas.height / 2);
+        }
+    }
+
+    function gameLoop() {
+        step();
+        draw();
+    }
+
+    setInterval(gameLoop, 120);
+
+    // Reveal the Next button after 60 seconds. The participant must then
+    // click it themselves to advance -- there is no auto-submit.
+    setTimeout(function () {
+        var wrapper = document.getElementById('snake-next-button-wrapper');
+        if (wrapper) {
+            wrapper.style.display = 'block';
+        }
+    }, 60 * 1000);
+})();
+</script>
+{% endblock %}

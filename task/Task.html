@@ -1,0 +1,138 @@
+{% extends "global/Base.html" %}
+{% load otree %}
+
+{% block content %}
+<div class="game-header">
+    <h1>Addition Task</h1>
+    <p>Solve as many problems as you can before time runs out.</p>
+</div>
+
+<div class="result-grid mb-3">
+    <div class="metric-card">
+        <div class="metric-label">Time remaining</div>
+        <div class="metric-value" id="time-remaining">{{ task_seconds }}</div>
+    </div>
+</div>
+
+<div class="choice-card text-center" id="problem-card">
+    <p class="text-muted mb-1">What is the sum?</p>
+    <div class="metric-value mb-3" id="problem-text">-</div>
+    <input
+        type="number"
+        id="answer-input"
+        class="form-control form-control-lg text-center mb-3"
+        style="max-width: 220px; margin: 0 auto;"
+        autocomplete="off"
+        autofocus
+    >
+    <button type="button" class="btn btn-primary" id="submit-answer">Submit</button>
+</div>
+
+<div id="time-up-card" class="instruction-card text-center" style="display: none;">
+    <p class="mb-0"><strong>Time is up!</strong> Submitting your results automatically...</p>
+</div>
+
+<input type="hidden" name="score" id="id_score" value="0">
+
+<script>
+(function () {
+    const TASK_SECONDS = {{ task_seconds }};
+    const NUM_PROBLEMS = {{ num_problems }};
+
+    // oTree tracks the real page-load deadline server-side via timeout_seconds,
+    // so a refresh does NOT grant extra time; it will auto-submit at the
+    // original deadline regardless. We mirror that deadline in localStorage
+    // so a refreshed page shows the correct remaining time and problem set
+    // state, rather than restarting the clock and problems from scratch.
+    const STORAGE_KEY = 'otree_task_deadline_{{ player.id_in_group }}_{{ player.round_number }}';
+
+    let deadline = parseInt(localStorage.getItem(STORAGE_KEY), 10);
+    const now = Date.now();
+    if (!deadline || isNaN(deadline)) {
+        deadline = now + TASK_SECONDS * 1000;
+        localStorage.setItem(STORAGE_KEY, deadline);
+    }
+
+    let problemIndex = 0;
+    let correctCount = 0;
+    let currentAnswer = 0;
+    let finished = false;
+
+    const problemText = document.getElementById('problem-text');
+    const answerInput = document.getElementById('answer-input');
+    const submitButton = document.getElementById('submit-answer');
+    const timeRemainingEl = document.getElementById('time-remaining');
+    const problemCard = document.getElementById('problem-card');
+    const timeUpCard = document.getElementById('time-up-card');
+    const scoreField = document.getElementById('id_score');
+
+    // oTree's Base.html already wraps this page's content in its own
+    // <form method="post"> with the CSRF token built in. We submit THAT
+    // form rather than creating a second one (a second form would lack
+    // the CSRF token and would not be processed by oTree at all).
+    const pageForm = document.querySelector('form');
+
+    function randomTwoDigit() {
+        return Math.floor(Math.random() * 90) + 10;
+    }
+
+    function newProblem() {
+        const a = randomTwoDigit();
+        const b = randomTwoDigit();
+        currentAnswer = a + b;
+        problemText.textContent = a + ' + ' + b + ' = ?';
+        answerInput.value = '';
+        answerInput.focus();
+    }
+
+    function submitTask() {
+        if (finished) return;
+        finished = true;
+        problemCard.style.display = 'none';
+        timeUpCard.style.display = 'block';
+        scoreField.value = correctCount;
+        localStorage.removeItem(STORAGE_KEY);
+        if (pageForm) {
+            pageForm.submit();
+        }
+    }
+
+    function checkAnswer() {
+        if (finished) return;
+        const submitted = parseInt(answerInput.value, 10);
+        if (!isNaN(submitted) && submitted === currentAnswer) {
+            correctCount += 1;
+        }
+        problemIndex += 1;
+        if (problemIndex >= NUM_PROBLEMS) {
+            submitTask();
+        } else {
+            newProblem();
+        }
+    }
+
+    submitButton.addEventListener('click', checkAnswer);
+    answerInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            checkAnswer();
+        }
+    });
+
+    const timerInterval = setInterval(function () {
+        const remaining = Math.max(0, Math.round((deadline - Date.now()) / 1000));
+        timeRemainingEl.textContent = remaining;
+        if (remaining <= 0) {
+            clearInterval(timerInterval);
+            submitTask();
+        }
+    }, 1000);
+
+    // If the page was refreshed partway through, the on-screen problem set
+    // restarts (there is no way to recover exactly which problem the
+    // participant was on), but the countdown itself keeps running from the
+    // original deadline stored above, so refreshing gains no extra time.
+    newProblem();
+})();
+</script>
+{% endblock %}

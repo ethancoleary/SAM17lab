@@ -1,0 +1,90 @@
+{% extends "global/Base.html" %}
+{% load otree %}
+
+{% block content %}
+<div class="game-header">
+    <h1>First of all....</h1>
+</div>
+
+<div class="instruction-card">
+    <p>
+        What is your group number?
+    </p>
+</div>
+
+<div class="group-grid mb-4">
+    <label class="group-btn">
+        <input type="radio" name="group_number" value="1" required>
+        <span>Group 1<br><i>(Present Bias)</i></span>
+    </label>
+    <label class="group-btn">
+        <input type="radio" name="group_number" value="2">
+        <span>Group 2<br><i>(Fairness)</i></span>
+    </label>
+    <label class="group-btn">
+        <input type="radio" name="group_number" value="3">
+        <span>Group 3<br><i>(Loss Aversion)</i></span>
+    </label>
+    <label class="group-btn">
+        <input type="radio" name="group_number" value="4">
+        <span>Group 4<br><i>(Cooperation)</i></span>
+    </label>
+    <label class="group-btn">
+        <input type="radio" name="group_number" value="5">
+        <span>Group 5<br><i>(Competition)</i></span>
+    </label>
+    <label class="group-btn">
+        <input type="radio" name="group_number" value="6">
+        <span>Group 6<br><i>(Honesty)</i></span>
+    </label>
+</div>
+
+{% next_button %}
+
+<style>
+.group-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 14px;
+}
+
+.group-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 28px 10px;
+    border: 2px solid var(--line);
+    border-radius: 14px;
+    background: white;
+    font-weight: 650;
+    font-size: 1.05rem;
+    color: var(--navy);
+    cursor: pointer;
+    text-align: center;
+    transition: border-color 0.12s ease, background 0.12s ease, transform 0.12s ease;
+}
+
+.group-btn input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.group-btn:hover {
+    border-color: var(--blue);
+    transform: translateY(-2px);
+}
+
+.group-btn input:checked + span {
+    color: white;
+}
+
+.group-btn:has(input:checked) {
+    background: var(--blue);
+    border-color: var(--blue);
+}
+</style>
+{% endblock %}

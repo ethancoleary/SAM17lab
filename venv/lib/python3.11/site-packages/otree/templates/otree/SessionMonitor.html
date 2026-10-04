@@ -1,0 +1,176 @@
+{% extends "otree/Session.html" %}
+
+{% block internal_styles %}
+    {{ super() }}
+    <style>
+
+        #monitor-table {
+            max-width: 1000px;
+        }
+        
+        #monitor-table th {
+            font-size: small;
+            padding-left: 0.25rem;
+            padding-right: 0.25rem;
+            padding-top: 0.25rem;
+            padding-bottom: 0.25rem;
+        }
+
+        #monitor-table td {
+            padding-top: 0.25rem;
+            padding-bottom: 0.25rem;
+        }
+
+        .monitor-controls-pane {
+            position: fixed;
+            bottom: 0rem;
+            right: 0rem;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 0.25rem;
+            padding: 0.5rem;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            max-width: 400px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    {{ super() }}
+    <table id="monitor-table"
+           class="table table-bordered table-hover table-condensed">
+        <thead>
+        <tr>
+            {% for header in headers %}
+                <th>{{ header }}</th>
+            {% endfor %}
+            <th></th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <p>
+        <span id="num_participants_started">0</span> started,
+        <span id="num_participants_in_progress">0</span> in progress
+        (total: {{ session.num_participants }})
+    </p>
+
+    {% if not session.use_browser_bots %}
+        {% csrf_token %}
+        <div class="monitor-controls-pane">
+            <small id="msg-refreshed" style="color: darkgreen"></small>
+
+            <div style="margin-bottom: 0.5rem;">
+                <label for="status_filter" style="font-size: small;">Filter by <code>participant.status</code>:</label>
+                <select id="status_filter" class="form-select">
+                    
+                </select>
+            </div>
+
+            <button id="advance_users" class="btn btn-secondary" type="button"
+                    title="Advance the user(s) by one page, by forcing a timeout on their current page."
+                    onclick="advanceUsers()">
+                Advance slowest participants
+            </button>
+            <select name="advance_participants_mode"
+                    onchange="changeAdvanceParticipantsMode(this.value)"
+                    class="form-select"
+                    style="display: none"
+                    >
+                <option value="all" selected>participants in last place</option>
+                <option value="visited_only">participants in last place (who already started)</option>
+            </select>
+            {% if session.num_participants > ADVANCE_SLOWEST_BATCH_SIZE %}
+                <small>(max {{ ADVANCE_SLOWEST_BATCH_SIZE }} at a time)</small>
+            {% endif %}
+
+            {% comment %}
+            <button class="btn btn-secondary" type="button"
+                    onclick="advanceSelectedUser()"
+            >
+                Advance selected
+            </button>
+            {% endcomment %}
+        </div>
+
+    {% endif %}
+    <br>
+
+    <script>
+
+        function changeAdvanceParticipantsMode(value) {
+            localStorage.setItem('advance_participants_mode', value);
+        }
+
+        function loadAdvanceParticipantsSplitButton() {
+            let mode = localStorage.getItem('advance_participants_mode');
+            if (mode) {
+                document.getElementsByName('advance_participants_mode')[0].value = mode;
+            }
+        }
+
+        loadAdvanceParticipantsSplitButton();
+    </script>
+
+    <div id="refresh_server_error" class="alert alert-danger"
+         style="display: none;">
+        Failed to refresh data from the server.
+    </div>
+
+    <div id="auto_advance_server_error" class="alert alert-danger"
+         style="display: none;">
+        An error occurred and participants could not be advanced.
+        See the server logs for details.
+    </div>
+
+
+{% endblock %}
+
+
+{% block internal_scripts %}
+    {{ super() }}
+    <script>
+        let recentlyActiveParticipants = {};
+        var $table, $tbody;
+        let visitedParticipants;
+        var monitorSocket;
+        var advanceUrl = '{% url 'AdvanceSession' session.code %}';
+        var socketUrl = {{ socket_url|json }};
+        let numParticipants = {{ session.num_participants|json }};
+    </script>
+
+    <script src="{% static 'otree/js/session_monitor.js' %}"></script>
+
+    <script>
+        $(document).ready(function () {
+            visitedParticipants = [];
+            $table = $('#monitor-table');
+            $tbody = $table.find('tbody');
+            initWebSocket(socketUrl, $tbody, visitedParticipants, $('#msg-refreshed'));
+
+            $('[data-bs-toggle="popover"]').popover();
+
+            initSortableHeaders();
+
+            // Set up status filter dropdown listener
+            document.getElementById('status_filter').addEventListener('change', function(e) {
+                currentStatusFilter = e.target.value;
+                applyStatusFilter();
+            });
+        });
+
+        setInterval(
+            function () {
+                $.ajax({
+                    url: '{% url "SessionMonitorAskForPresenceIcons" session.code %}',
+                    type: 'GET',
+                    contentType: "application/json",
+                });
+            },
+            // don't want to do it too often since it will clutter the logs
+            15 * 1000);
+    </script>
+{% endblock %}

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ 'Welcome'|gettext }}</title>
+    <link href="{% static 'bootstrap5/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'otree/css/theme2.css' %}" rel="stylesheet">
+</head>
+<body>
+    <div class="container m-5">
+        <h2>
+            {{ 'Welcome'|gettext }}
+        </h2>
+        <div>
+            <form>
+                {% if has_participant_label_file %}
+                    <p class="error text-danger" data-field-error="participant_label" style="display: none;">{{ 'This participant label was not found'|gettext }}</p>
+                    <label for="participant_label">{{ 'Participant label:'|gettext }}</label>
+                    <br/>
+                    <input type="text" id="participant_label"
+                           name="participant_label" class="form-control"/>
+                    <br/>
+                {% else %}
+                    <p>{{ 'Click the button to start.'|gettext }}</p>
+                {% endif %}
+                <button type="submit" class="btn btn-primary">{{ 'Start'|gettext }}</button>
+                <p id="other-errors" style="display: none; color: red;"></p>
+            </form>
+        </div>
+    </div>
+    
+    <script src="{% static 'bootstrap5/js/bootstrap.bundle.min.js' %}"></script>
+    <script>
+        // Populate form fields from query parameters on page load
+        const urlParams = new URLSearchParams(window.location.search);
+        const participantLabel = urlParams.get('participant_label');
+        if (participantLabel) {
+            const participantLabelField = document.querySelector('input[name="participant_label"]');
+            if (participantLabelField) {
+                participantLabelField.value = participantLabel;
+            }
+        }
+        
+        document.querySelector('form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+                        
+            // Add form data to query parameters
+            const form = document.querySelector('form');
+            const formData = new FormData(form);
+            for (const [name, value] of formData.entries()) {
+                if (value) {
+                    urlParams.set(name, value);
+                }
+            }
+            
+            // Convert query parameters to JSON object
+            const jsonData = Object.fromEntries(urlParams.entries());
+            
+            try {
+                const response = await fetch(window.location.pathname, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(jsonData)
+                });
+                
+                const data = await response.json();
+                if (data.status === 'ok') {
+                    // Validation passed, add welcome_page_ok=1 and reload page
+                    urlParams.set('welcome_page_ok', '1');
+                    window.location.href = window.location.pathname + '?' + urlParams.toString();
+                } else if (data.errors) {
+                    // Clear all error messages first
+                    for (const errorEl of document.querySelectorAll('[data-field-error]')) {
+                        errorEl.style.display = 'none';
+                    }
+                    
+                    // Show error messages for specific fields
+                    for (const [fieldName, errorMessage] of Object.entries(data.errors)) {
+                        const errorEl = document.querySelector(`[data-field-error="${fieldName}"]`);
+                        if (errorEl) {
+                            errorEl.textContent = errorMessage;
+                            errorEl.style.display = 'block';
+                        } else {
+                            const otherErrorsEl = document.querySelector('#other-errors');
+                            otherErrorsEl.insertAdjacentHTML('beforeend', errorMessage);
+                            otherErrorsEl.style.display = 'block';
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+{% extends "global/Base.html" %}
+{% load otree %}
+
+{% block content %}
+<div class="game-header">
+    <h1>Task</h1>
+    <p>You will first complete a short task to earn a score.</p>
+</div>
+
+<div class="instruction-card">
+    <p>
+        On the next page, you will have <strong>60 seconds</strong> to solve as many
+        simple addition problems as you can. Each problem asks you to add together
+        two two-digit numbers, for example:
+    </p>
+    <p class="text-center">
+        <span class="number-pill">27 + 58 = ?</span>
+    </p>
+    <p>
+        Type your answer into the box and press <strong>Enter</strong> or click
+        <strong>Submit</strong> to move to the next problem. Try to solve as many
+        problems correctly as you can before the time runs out.
+    </p>
+    <p>
+        Your score on this task will later be used elsewhere in the experiment.
+        You will not be shown your score directly.
+    </p>
+</div>
+
+{% next_button %}
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "global/Base.html" %}
+{% load otree %}
+
+{% block content %}
+<div class="game-header">
+    <h1>Game 6: Round 2</h1>
+
+</div>
+
+<div class="instruction-card">
+    <p>
+        For the rest of this game, you have been <b>matched with 3 other participants</b> in this room to form a group.
+    </p>
+    <div class="text-center my-3">
+        <img src="{% static 'comp_group.png' %}" alt="Illustration of a gender-balanced group of four participants" style="max-width: 320px; width: 100%;">
+    </div>
+    <p>
+        For round 2, you will complete the addition task again, this time in a
+        <strong>tournament</strong> against the 3 other participants
+        in your group.
+    </p>
+    <p class="mb-0">
+        If this round is chosen for payment, only the person with the <strong>highest score</strong> in the group earns
+        anything: the winner receives 80 &times; their score
+        in NOK. Everyone else in the group earns 0 NOK for this round.
+    </p>
+    <p>
+        Click on next to start round 2.
+    </p>
+</div>
+
+{% next_button %}
+{% endblock %}

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block head_title %}{% endblock %} | oTree Admin</title>
+    {% block internal_styles %}
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="{% static 'bootstrap5/css/bootstrap.min.css' %}">
+        <link rel="stylesheet" href="{% static 'otree/css/theme2.css' %}">
+        <script src="{% static 'otree/js/jquery-3.2.1.min.js' %}"></script>
+    {% endblock %}
+    <script src="{% static 'otree/js/reconnecting-websocket-iife.min.js' %}"></script>
+    <script src="{% static 'otree/js/common_admin.js' %}"></script>
+</head>
+<body>
+{% block body_main %}{% endblock %}
+
+{% block internal_scripts %}
+    <script src="{% static 'bootstrap5/js/bootstrap.bundle.min.js' %}"></script>
+{% endblock %}
+{% block scripts %}{% endblock %}
+</body>
+</html>

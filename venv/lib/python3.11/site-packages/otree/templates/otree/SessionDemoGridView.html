@@ -1,0 +1,41 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>{{ session.code|truncate_(4) }}/{{ page_emoji }} Grid View Demo</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            
+            html, body {
+                height: 100%;
+                overflow: hidden;
+            }
+            
+            .participant-frames {
+                display: grid;
+                grid-template-columns: repeat({{ items_per_row }}, 1fr);
+                height: 100vh;
+                width: 100vw;
+            }
+            
+            iframe {
+                width: 100%;
+                height: 100%;
+                border: 1px solid black;
+                border-radius: 4px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="participant-frames">
+            {% for participant_url in participant_urls %}
+                <iframe src="{{ participant_url }}"></iframe>
+            {% endfor %}
+        </div>
+    </body>
+</html>

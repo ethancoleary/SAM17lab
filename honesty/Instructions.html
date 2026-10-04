@@ -1,0 +1,63 @@
+{% extends "global/Base.html" %}
+{% load otree %}
+
+{% block content %}
+<div class="game-header">
+    <h1>Game 2 Instructions</h1>
+    <p>Please read carefully before continuing.</p>
+</div>
+
+<div class="instruction-card">
+    <p>
+        On the next page, a six-sided die will be rolled for you. Only <b>you</b> will see
+        the result. Not even the experimenter will be able to see the roll.
+    </p>
+    <p class="mb-0">
+        You will then be asked to report the number you rolled.
+    </p>
+</div>
+
+{% if player.participant.honesty_treatment == 0 %}
+<div class="instruction-card">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <h5 class="mb-2">Payment</h5>
+            <p>
+                The number you report will correspond to the amount of money you will earn:
+            </p>
+            <p class="text-center">
+                <span class="number-pill">Earning = 30 &times; (reported number)</span>
+            </p>
+            <p class="mb-0">
+                For example, if you report a 4, you will earn 30 &times; 4 = 120 NOK.
+            </p>
+        </div>
+        <div class="col-md-4 text-center">
+            <img src="{% static 'pocket.png' %}" alt="Icon representing personal earnings" style="max-width: 160px; width: 100%;">
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="instruction-card">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <h5 class="mb-2">Payment</h5>
+            <p>
+                The number you report will correspond to a donation to WWF (the World Wide Fund for Nature), a nonprofit organisation focused on conserving the environment.
+            </p>
+            <p class="text-center">
+                <span class="number-pill">Donation = 30 &times; (reported number)</span>
+            </p>
+            <p class="mb-0">
+                For example, if you report a 4, the donation will be 30 &times; 4 = 120 NOK.
+            </p>
+        </div>
+        <div class="col-md-4 text-center">
+            <img src="{% static 'WWF-logo.png' %}" alt="WWF logo" style="max-width: 160px; width: 100%;">
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% next_button %}
+{% endblock %}

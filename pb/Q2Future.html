@@ -1,0 +1,143 @@
+{% extends "global/Base.html" %}
+{% load otree %}
+
+{% block content %}
+<div class="game-header">
+    <h2>Question 2</h2>
+    <p>Please choose one of the two options below.</p>
+</div>
+
+{% if is_stressed %}
+<div class="instruction-card text-center" style="background: var(--red-light); border: 2px solid var(--red);">
+    <p class="mb-1" style="font-weight: 700; color: #b42318;">
+    You have <span id="pb-countdown">{{ stress_timeout }}</span> seconds to decide.
+</p>
+    <p class="mb-0 text-muted small">
+        If time runs out, a random option will be chosen for you automatically.
+    </p>
+</div>
+{% endif %}
+
+<div class="choice-grid choice-grid-2">
+    <label class="choice-btn choice-btn-tall">
+        <input type="radio" name="choice_future" value="A" id="pb-radio-sooner">
+        <span>
+            <strong>Option A</strong><br>
+            Receive {{ sooner_amount }} NOK<br>
+            <strong>in {{ front_end_delay }} weeks</strong>
+        </span>
+    </label>
+    <label class="choice-btn choice-btn-tall">
+        <input type="radio" name="choice_future" value="B" id="pb-radio-later">
+        <span>
+            <strong>Option B</strong><br>
+            Receive {{ later_amount }} NOK<br>
+            <strong>in {{ later_date }} weeks</strong>
+        </span>
+    </label>
+</div> <br>
+
+{% next_button %}
+
+{% if is_stressed %}
+<script>
+(function () {
+    const TIMEOUT_SECONDS = {{ stress_timeout }};
+    const STORAGE_KEY = 'otree_pb_deadline_q2_{{ player.id_in_group }}_{{ player.round_number }}';
+
+    let deadline = parseInt(localStorage.getItem(STORAGE_KEY), 10);
+    const now = Date.now();
+    if (!deadline || isNaN(deadline)) {
+        deadline = now + TIMEOUT_SECONDS * 1000;
+        localStorage.setItem(STORAGE_KEY, deadline);
+    }
+
+    const countdownEl = document.getElementById('pb-countdown');
+    // Base.html already wraps this page's content in its own <form>. Do
+    // NOT create a second <form> here (nested forms are invalid HTML and
+    // browsers silently drop them). Use the real, ambient form instead.
+    const form = document.querySelector('form');
+    const radios = form ? form.querySelectorAll('input[type="radio"]') : [];
+    let submitted = false;
+
+    function submitForm() {
+        if (submitted) return;
+        submitted = true;
+        localStorage.removeItem(STORAGE_KEY);
+        clearInterval(intervalId);
+        radios.forEach(function (r) { r.disabled = true; });
+        if (form) {
+            form.submit();
+        }
+    }
+
+    const intervalId = setInterval(function () {
+        const remaining = Math.max(0, Math.round((deadline - Date.now()) / 1000));
+        if (countdownEl) {
+            countdownEl.textContent = remaining;
+        }
+        if (remaining <= 0) {
+            submitForm();
+        }
+    }, 250);
+
+    if (form) {
+        form.addEventListener('submit', function () {
+            localStorage.removeItem(STORAGE_KEY);
+            clearInterval(intervalId);
+        });
+    }
+})();
+</script>
+{% endif %}
+
+<style>
+.choice-grid {
+    display: grid;
+    gap: 16px;
+    margin-top: 8px;
+}
+
+.choice-grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.choice-btn-tall {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 16px;
+    border: 2px solid var(--line);
+    border-radius: 14px;
+    background: white;
+    font-size: 1.05rem;
+    color: var(--navy);
+    cursor: pointer;
+    text-align: center;
+    transition: border-color 0.12s ease, background 0.12s ease, transform 0.12s ease;
+}
+
+.choice-btn-tall input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.choice-btn-tall:hover {
+    border-color: var(--blue);
+    transform: translateY(-2px);
+}
+
+.choice-btn-tall:has(input:checked) {
+    background: var(--blue);
+    border-color: var(--blue);
+}
+
+.choice-btn-tall input:checked ~ span,
+.choice-btn-tall input:checked + span {
+    color: white;
+}
+</style>
+{% endblock %}

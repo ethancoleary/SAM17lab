@@ -1,0 +1,24 @@
+{% extends "global/Base.html" %}
+{% load otree %}
+
+{% block content %}
+<div class="game-header">
+    <h1>Payment Timing Questions</h1>
+    <p>You will answer two questions about how you would like to receive your bonus.</p>
+</div>
+
+<div class="instruction-card">
+    <p>
+        On the following pages, you will be asked to choose between two payment options.
+    </p>
+    <p>
+        One of these questions will be chosen at random at the end of the study and your choice in that question will be relevant for your payment.
+    </p>
+    <p>
+        Please read each question carefully. There are no right or wrong answers &mdash;
+        we are interested in your own preference.
+    </p>
+</div>
+
+{% next_button %}
+{% endblock %}

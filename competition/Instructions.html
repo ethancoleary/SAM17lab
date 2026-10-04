@@ -1,0 +1,23 @@
+{% extends "global/Base.html" %}
+{% load otree %}
+
+{% block content %}
+<div class="game-header">
+    <h1>Game 6 Brief</h1>
+    <p></p>
+</div>
+
+<div class="instruction-card">
+    <p>
+        For game 6, there are 3 rounds. Your payment for game 6 will come from your earnings of one of these rounds <b>chosen at random</b>.
+    </p>
+    <p>
+        In each round, you need to complete the number addition task, but the procedure through which this task translates to your earnings varies.
+    </p>
+    <p>
+        Click 'next' below to move to round 1's instructions.
+    </p>
+</div>
+
+{% next_button %}
+{% endblock %}

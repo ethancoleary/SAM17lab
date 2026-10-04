@@ -1,0 +1,79 @@
+{% extends "global/Base.html" %}
+{% load otree %}
+
+{% block content %}
+<div class="game-header">
+    <h1>Report Your Roll</h1>
+    <p>The die has been rolled. Only you can see the result.</p>
+</div>
+
+<div class="instruction-card text-center">
+    <p class="text-muted mb-1">Your die roll</p>
+    <div class="metric-value" style="font-size: 3rem;">{{ die_roll }}</div>
+</div>
+
+<div class="choice-card">
+    <label for="id_report" class="form-label fw-bold">
+        Report the number rollen (enter a whole number from 1 to 6)
+    </label>
+    <input
+        type="number"
+        id="id_report"
+        name="report"
+        class="form-control form-control-lg"
+        style="max-width: 220px;"
+        min="1"
+        max="6"
+        step="1"
+        inputmode="numeric"
+        autocomplete="off"
+        oninput="updateEarnings(this.value)"
+        required
+    >
+    <div class="mt-3" id="earnings-text">
+        <span class="text-muted">
+            Enter a number to see the
+            {% if player.participant.honesty_treatment == 0 %}payment{% else %}donation{% endif %}.
+        </span>
+    </div>
+</div>
+
+{% next_button %}
+
+<script>
+const PAYMENT_PER_POINT = {{ payment_per_point }};
+const IS_DONATION = {% if player.participant.honesty_treatment == 0 %}false{% else %}true{% endif %};
+const LABEL = IS_DONATION ? 'Your donation' : 'Your earnings';
+
+function updateEarnings(value) {
+    const earningsEl = document.getElementById('earnings-text');
+    const input = document.getElementById('id_report');
+    const numValue = parseInt(value, 10);
+
+    // Clamp / reject anything outside 1-6 or non-integer input
+    if (value !== '' && (isNaN(numValue) || numValue < 1 || numValue > 6 || !Number.isInteger(numValue))) {
+        input.setCustomValidity('Please enter a whole number between 1 and 6.');
+    } else {
+        input.setCustomValidity('');
+    }
+
+    if (value === '' || isNaN(numValue) || numValue < 1 || numValue > 6) {
+        earningsEl.innerHTML = '<span class="text-muted">Enter a number to see the ' + (IS_DONATION ? 'donation' : 'payment') + '.</span>';
+        return;
+    }
+
+    const earnings = PAYMENT_PER_POINT * numValue;
+    earningsEl.innerHTML =
+        LABEL + ': <span class="payoff-good">' + earnings + ' NOK</span>.';
+}
+
+// Prevent typing digits outside 1-6 range and non-numeric characters
+document.getElementById('id_report').addEventListener('keydown', function (e) {
+    const allowedKeys = ['Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight', 'Enter'];
+    if (allowedKeys.includes(e.key)) return;
+    if (!/^[1-6]$/.test(e.key)) {
+        e.preventDefault();
+    }
+});
+</script>
+{% endblock %}

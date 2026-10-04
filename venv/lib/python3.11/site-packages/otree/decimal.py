@@ -1,0 +1,189 @@
+from decimal import Decimal, ROUND_HALF_UP
+from otree.i18n import convert_decimal_separator
+
+
+def _to_decimal(amount):
+    if isinstance(amount, Decimal):
+        return amount
+    elif isinstance(amount, float):
+        return Decimal.from_float(amount)
+    else:
+        return Decimal(amount)
+
+
+class DecimalUnit(Decimal):
+
+    # Default class attributes (should be overridden by subclasses)
+    storage_places = None
+    input_places = None
+    input_unit_label = ''
+    output_min_places = None
+    output_max_places = None
+
+    @staticmethod
+    def output(formatted: str, raw: Decimal) -> str:
+        return formatted
+
+    def __new__(cls, amount):
+        """Create an instance of this decimal unit"""
+        if amount is None:
+            raise ValueError('Cannot convert None to decimal')
+        cls._validate_config()
+        instance = Decimal.__new__(cls, cls._sanitize(amount))
+        return instance
+
+    @classmethod
+    def _validate_config(cls):
+        """Validate that required class attributes are defined"""
+        if cls.storage_places is None:
+            raise ValueError(
+                f'{cls.__name__} is missing required attribute "storage_places"'
+            )
+        if cls.input_places is None:
+            raise ValueError(
+                f'{cls.__name__} is missing required attribute "input_places"'
+            )
+        if cls.output_min_places is None:
+            raise ValueError(
+                f'{cls.__name__} is missing required attribute "output_min_places"'
+            )
+        if cls.output_max_places is None:
+            raise ValueError(
+                f'{cls.__name__} is missing required attribute "output_max_places"'
+            )
+
+    @classmethod
+    def _sanitize(cls, amount):
+        if isinstance(amount, cls):
+            return amount
+        places = cls.storage_places
+        quant = Decimal('0.1') ** places
+        return _to_decimal(amount).quantize(quant, rounding=ROUND_HALF_UP)
+
+    # Support for pickling
+    def __reduce__(self):
+        return (self.__class__, (Decimal.__str__(self),))
+
+    # Immutable
+    def __copy__(self):
+        return self
+
+    def __deepcopy__(self, memo):
+        return self
+
+    def __float__(self):
+        return float(Decimal(self))
+
+    def __str__(self):
+        return self._format_for_display()
+
+    def __repr__(self):
+        # don't use .normalize() because:
+        # (1) easier to understand the precision
+        # (2) numbers line up, e.g. in data table view.
+        return f'{self.__class__.__name__}({Decimal(self)})'
+
+    def __eq__(self, other):
+        if isinstance(other, DecimalUnit):
+            # Only equal if same type and same value
+            return type(self) == type(other) and Decimal.__eq__(self, other)
+        elif isinstance(other, (int, float, Decimal)):
+            return Decimal.__eq__(self, self._sanitize(other))
+        else:
+            return False
+
+    __hash__ = Decimal.__hash__
+
+    def _format_with_places(self, min_places, max_places):
+        """Helper to format with specific decimal places and apply custom function"""
+        # Round to max_places
+        quant = Decimal('0.1') ** max_places
+        rounded = Decimal(self).quantize(quant, rounding=ROUND_HALF_UP)
+
+        # Format with Python's thousand separator (comma) and max_places decimals
+        fmt = "{:,.%df}" % max_places
+        result = fmt.format(rounded)
+
+        # Strip trailing zeros down to min_places (before converting separators)
+        if min_places < max_places and '.' in result:
+            parts = result.split('.')
+            decimal_part = parts[1].rstrip('0')
+            # Ensure we keep at least min_places
+            decimal_part = decimal_part.ljust(min_places, '0')
+            if decimal_part:
+                result = parts[0] + '.' + decimal_part
+            else:
+                result = parts[0]
+
+        # Convert ',' to THOUSAND_SEPARATOR and '.' to DECIMAL_SEPARATOR
+        result = convert_decimal_separator(result)
+
+        return self.__class__.output(result, Decimal(self))
+
+    def _prepare_operand(self, other):
+        """Convert operand to Decimal for arithmetic"""
+        if isinstance(other, Decimal):
+            return other
+        return _to_decimal(other)
+
+    @staticmethod
+    def _make_binary_operator(name):
+        """Factory for creating arithmetic operator methods"""
+        method = getattr(Decimal, name, None)
+
+        def binary_function(self, other):
+            other = self._prepare_operand(other)
+            result = method(self, other)
+            return self._make_result(result, other)
+
+        return binary_function
+
+    def _format_for_display(self):
+        """Format using unit's display settings"""
+        min_places = self.__class__.output_min_places
+        max_places = self.__class__.output_max_places
+        return self._format_with_places(min_places, max_places)
+
+    def to_real_world_currency(self, session):
+        """
+        Compatibility method for when CurrencyField is aliased to DecimalField.
+        Since there's only one currency type when CURRENCY_UNIT is defined,
+        just return self (similar to Currency.to_real_world_currency when USE_POINTS=False)
+        """
+        return self
+
+    def _make_result(self, result, other):
+        """DRY helper for arithmetic operations"""
+        if not isinstance(other, DecimalUnit):
+            # Operating with scalar preserves type
+            return self.__class__(result)
+        if type(self) == type(other):
+            # Same type preserves type
+            return self.__class__(result)
+        # Different types return plain Decimal
+        return Decimal(result)
+
+    # Arithmetic operations - generated by _make_binary_operator
+    __add__ = _make_binary_operator('__add__')
+    __radd__ = _make_binary_operator('__radd__')
+    __sub__ = _make_binary_operator('__sub__')
+    __rsub__ = _make_binary_operator('__rsub__')
+    __mul__ = _make_binary_operator('__mul__')
+    __rmul__ = _make_binary_operator('__rmul__')
+    __truediv__ = _make_binary_operator('__truediv__')
+    __rtruediv__ = _make_binary_operator('__rtruediv__')
+    __floordiv__ = _make_binary_operator('__floordiv__')
+    __rfloordiv__ = _make_binary_operator('__rfloordiv__')
+    __mod__ = _make_binary_operator('__mod__')
+    __rmod__ = _make_binary_operator('__rmod__')
+    __pow__ = _make_binary_operator('__pow__')
+    __rpow__ = _make_binary_operator('__rpow__')
+
+    def __neg__(self):
+        return self.__class__(Decimal.__neg__(self))
+
+    def __pos__(self):
+        return self.__class__(Decimal.__pos__(self))
+
+    def __abs__(self):
+        return self.__class__(Decimal.__abs__(self))

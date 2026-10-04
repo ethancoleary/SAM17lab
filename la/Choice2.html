@@ -1,0 +1,112 @@
+{% extends "global/Base.html" %}
+{% load otree %}
+
+{% block content %}
+<div class="game-header">
+    <h1>Choice 1</h1>
+    <p> Choose how you would like your tax to be determined. If this choice is selected for your payment, you will receive the money according to your chosen option.</p>
+</div>
+
+<div class="instruction-card">
+    <p class="mb-0">
+        Based on your performance in the earlier task, you earn
+        <span class="number-pill">15x NOK</span>.</p>
+    <b>You will also receive a bonus.</b> Choose how the
+        bonus is determined.
+    </p>
+</div>
+
+{% if is_stressed %}
+<div class="instruction-card text-center" style="background: var(--red-light); border: 2px solid var(--red);">
+    <p class="mb-1" style="font-weight: 700; color: #b42318;">
+        You have <span id="la-countdown">{{ stress_timeout }}</span> seconds to decide.
+    </p>
+    <p class="mb-0 text-muted small">
+        If time runs out, a random option will be chosen for you automatically.
+    </p>
+</div>
+{% endif %}
+
+<div class="row g-3 mb-3">
+    <div class="col-md-6">
+        <label class="choice-btn-tall w-100 h-100">
+            <input type="radio" name="choice2" value="A" id="la-radio-a">
+            <span>
+                <strong>Option A</strong><br>
+                A certain bonus of
+                <span class="payoff-neutral">4x</span>
+            </span>
+        </label>
+    </div>
+    <div class="col-md-6">
+        <label class="choice-btn-tall w-100 h-100">
+            <input type="radio" name="choice2" value="B" id="la-radio-b">
+            <span>
+                <strong>Option B</strong><br>
+                20% chance of a
+                <span class="payoff-neutral">5x bonus</span><br>
+                80% chance of
+                <span class="payoff-neutral">no bonus</span>
+            </span>
+        </label>
+    </div>
+</div>
+
+{% if form.choice2.errors %}
+<div class="alert alert-danger">{{ form.choice2.errors }}</div>
+{% endif %}
+
+{% next_button %}
+
+{% if is_stressed %}
+<script>
+(function () {
+    const TIMEOUT_SECONDS = {{ stress_timeout }};
+    const STORAGE_KEY = 'otree_la_deadline_{{ player.id_in_group }}_{{ player.round_number }}';
+
+    let deadline = parseInt(localStorage.getItem(STORAGE_KEY), 10);
+    const now = Date.now();
+    if (!deadline || isNaN(deadline)) {
+        deadline = now + TIMEOUT_SECONDS * 1000;
+        localStorage.setItem(STORAGE_KEY, deadline);
+    }
+
+    const countdownEl = document.getElementById('la-countdown');
+    // Base.html already wraps this page's content in its own <form>. Do
+    // NOT create a second <form> here (nested forms are invalid HTML and
+    // browsers silently drop them). Use the real, ambient form instead.
+    const form = document.querySelector('form');
+    const radios = form ? form.querySelectorAll('input[type="radio"]') : [];
+    let submitted = false;
+
+    function submitForm() {
+        if (submitted) return;
+        submitted = true;
+        localStorage.removeItem(STORAGE_KEY);
+        clearInterval(intervalId);
+        radios.forEach(function (r) { r.disabled = true; });
+        if (form) {
+            form.submit();
+        }
+    }
+
+    const intervalId = setInterval(function () {
+        const remaining = Math.max(0, Math.round((deadline - Date.now()) / 1000));
+        if (countdownEl) {
+            countdownEl.textContent = remaining;
+        }
+        if (remaining <= 0) {
+            submitForm();
+        }
+    }, 250);
+
+    if (form) {
+        form.addEventListener('submit', function () {
+            localStorage.removeItem(STORAGE_KEY);
+            clearInterval(intervalId);
+        });
+    }
+})();
+</script>
+{% endif %}
+{% endblock %}

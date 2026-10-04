@@ -1,0 +1,10 @@
+function back_button(options={}) {
+    const form = document.getElementById('form');
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'back_button';
+    input.value = JSON.stringify(options);
+    form.appendChild(input);
+    form.noValidate = true;
+    form.submit();
+}

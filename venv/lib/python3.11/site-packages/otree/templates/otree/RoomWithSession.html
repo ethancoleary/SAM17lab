@@ -1,0 +1,51 @@
+{% extends "otree/BaseAdminRegular.html" %}
+
+{% block head_title %}{{ page_emoji }} Room: {{ room.display_name }}{% endblock %}
+{% block title %}Room: {{ room.display_name }}{% endblock %}
+
+{% block content %}
+
+    <form method="post" action="{% url "CloseRoom" room.name %}">
+        {% csrf_token %}
+
+        <div class="row">
+            <div class="col">
+                <div class="alert alert-success">
+                    <div class="row">
+                        <div class="col">
+                            <p>Session <code>{{ session_code }}</code> is taking place in this room.</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <a href="{{ session_url }}">Monitor the session {{ ADMIN_EMOJIS.SessionMonitor }}</a>
+                            </a>
+                        </div>
+                        <div class="col text-end">
+                            <button class="btn btn-secondary" id="close-room">
+                                Close this room
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </form>
+
+    {% include "otree/includes/RoomParticipantLinks.html" %}
+
+    <h4>Hard-coded links</h4>
+
+    <p>
+    Generally, you should provide your participants with the room-wide URL above.
+    But in special cases where you need to open (or re-open) a specific
+    participant's link, by using the participant code, you can use the below links.
+    </p>
+
+    <details>
+    <summary>Show/Hide</summary>
+    {% include 'otree/includes/participant_code_links_table.html' with p_urls=participant_code_urls %}
+    </details>
+
+{% endblock %}

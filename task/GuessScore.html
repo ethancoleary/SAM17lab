@@ -1,0 +1,42 @@
+{% extends "global/Base.html" %}
+{% load otree %}
+
+{% block content %}
+<div class="game-header">
+    <h1>Your Guess (1/2)</h1>
+    <p>Before we move on, we'd like to know how you think you performed.</p>
+</div>
+
+<div class="instruction-card">
+    <p class="mb-0">
+        You just completed the addition task, which had
+        <span class="number-pill">{{ num_problems }} problems</span>.
+        How many do you think you got correct?
+    </p>
+    <p>
+        You will get a 100 NOK bonus if your answer is correct.
+    </p>
+</div>
+
+<div class="choice-card text-center">
+    <label class="form-label fw-semibold" for="id_guessed_score">
+        {{ form.guessed_score.label }}
+    </label>
+    <input
+        type="number"
+        name="guessed_score"
+        id="id_guessed_score"
+        class="form-control form-control-lg text-center mb-2"
+        style="max-width: 220px; margin: 0 auto;"
+        min="0"
+        max="{{ num_problems }}"
+        autocomplete="off"
+        required
+    >
+    {% if form.guessed_score.errors %}
+    <div class="alert alert-danger mt-2 mb-0">{{ form.guessed_score.errors }}</div>
+    {% endif %}
+</div>
+
+<button type="submit" class="btn btn-primary btn-lg mt-3">Continue</button>
+{% endblock %}

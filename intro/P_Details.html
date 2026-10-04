@@ -1,0 +1,139 @@
+{% extends "global/Base.html" %}
+{% load otree %}
+
+{% block content %}
+<div class="game-header">
+    <h1>A few details about you</h1>
+    <p>This information helps us describe the participant sample for the course.</p>
+</div>
+
+<div class="instruction-card">
+    <div class="mb-4">
+        <label class="form-label fw-bold" for="id_age">What is your age?</label>
+        {% formfield 'age' %}
+    </div>
+
+    <div class="mb-4">
+        <label class="form-label fw-bold">What is your nationality?</label>
+        <div class="choice-grid choice-grid-4">
+            <label class="choice-btn">
+                <input type="radio" name="nationality" value="1" required>
+                <span>Norwegian</span>
+            </label>
+            <label class="choice-btn">
+                <input type="radio" name="nationality" value="2">
+                <span>Other Nordic</span>
+            </label>
+            <label class="choice-btn">
+                <input type="radio" name="nationality" value="3">
+                <span>Other EU/EEA</span>
+            </label>
+            <label class="choice-btn">
+                <input type="radio" name="nationality" value="4">
+                <span>Non-EU/EEA</span>
+            </label>
+        </div>
+        {{ formfield_errors 'nationality' }}
+    </div>
+
+    <div class="mb-4">
+        <label class="form-label fw-bold">Are you an exchange student?</label>
+        <div class="choice-grid choice-grid-2">
+            <label class="choice-btn">
+                <input type="radio" name="exchange" value="1" required>
+                <span>Yes</span>
+            </label>
+            <label class="choice-btn">
+                <input type="radio" name="exchange" value="0">
+                <span>No</span>
+            </label>
+        </div>
+        {{ formfield_errors 'exchange' }}
+    </div>
+
+    <div class="mb-4">
+        <label class="form-label fw-bold">What is your gender?</label>
+        <div class="choice-grid choice-grid-4">
+            <label class="choice-btn">
+                <input type="radio" name="gender" value="1" required>
+                <span>Male</span>
+            </label>
+            <label class="choice-btn">
+                <input type="radio" name="gender" value="2">
+                <span>Female</span>
+            </label>
+            <label class="choice-btn">
+                <input type="radio" name="gender" value="3">
+                <span>Other</span>
+            </label>
+            <label class="choice-btn">
+                <input type="radio" name="gender" value="4">
+                <span>Prefer not to say</span>
+            </label>
+        </div>
+        {{ formfield_errors 'gender' }}
+    </div>
+</div>
+
+{% next_button %}
+
+<style>
+.choice-grid {
+    display: grid;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.choice-grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.choice-grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+@media (min-width: 576px) {
+    .choice-grid-4 {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+.choice-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 18px 10px;
+    border: 2px solid var(--line);
+    border-radius: 14px;
+    background: white;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--navy);
+    cursor: pointer;
+    text-align: center;
+    transition: border-color 0.12s ease, background 0.12s ease, transform 0.12s ease;
+}
+
+.choice-btn input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.choice-btn:hover {
+    border-color: var(--blue);
+    transform: translateY(-2px);
+}
+
+.choice-btn:has(input:checked) {
+    background: var(--blue);
+    border-color: var(--blue);
+}
+
+.choice-btn input:checked + span {
+    color: white;
+}
+</style>
+{% endblock %}

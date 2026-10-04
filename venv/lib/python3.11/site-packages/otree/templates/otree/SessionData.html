@@ -1,0 +1,309 @@
+{% extends "otree/Session.html" %}
+
+{% block internal_styles %}
+  {{ super() }}
+  <style>
+    #bottom-toolbar {
+      position: fixed;
+      bottom: 0;
+      right: 0;
+      background-color: white;
+      padding: 5px;
+    }
+
+    .toolbar-container {
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+      width: 100%;
+      gap: 20px;
+      justify-content: flex-end;
+    }
+
+    .toolbar-group {
+      display: flex;
+      flex-direction: column;
+      /* since it's right aligned, we want content to stay put when text increases */
+      align-items: end;
+      
+      gap: 5px;
+    }
+
+    /* take 100% width, then its child will naturally left-align */
+    .toolbar-info {
+      width: 100%
+    }
+
+    .toolbar-buttons {
+      display: flex;
+      gap: 5px;
+    }
+
+    .field-header {
+      position: sticky;
+      top: 0;
+      background-color: white;
+      max-width: 11ch;
+      overflow: hidden;
+    }
+
+    .id-in-session {
+      position: sticky;
+      left: 0;
+      background-color: white;
+    }
+
+    #cur-app {
+      font-weight: bold;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis
+    }
+
+    .results-table tbody td {
+      font-family: monospace;
+      text-align: right;
+    }
+
+    .results-table th,
+    .results-table td {
+      border: 1px solid #dee2e6;
+      padding-top: 0.25rem;
+      padding-bottom: 0.25rem;
+    }
+
+    .field-header a {
+      text-decoration: none;
+      cursor: pointer;
+      display: block;
+    }
+
+    .field-header a:hover {
+      text-decoration: underline;
+    }
+
+  </style>
+{% endblock %}
+
+{% block content %}
+  {{ super() }}
+  {# removed the card because wide tables were overflowing past it. #}
+  {% for table in tables %}
+    <table class="table results-table table-hover">
+      <thead style="background-color: white; z-index: 1000">
+      <tr>
+        <th class="field-header">
+          <a href="#" data-sortable="true" data-field-index="-1" data-table-id="{{ forloop.counter0 }}">#</a>
+        </th>
+        {% for header in table.headers %}
+          <th class="field-header">
+            <a href="#" data-sortable="true" data-field-index="{{ header.index }}" data-table-id="{{ header.table_id }}">
+              {% if header.prefix %}{{ header.prefix }}<br>{% endif %}{{ header.display }}
+            </a>
+          </th>
+        {% endfor %}
+
+      </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  {% endfor %}
+  {# some extra whitespace so people can scroll past the fixed bottom toolbar #}
+  <br><br>
+  <br><br>
+  <div id="bottom-toolbar">
+    <div class="toolbar-container">
+      <div class="toolbar-group">
+        <div class="toolbar-buttons">
+          <button class="btn btn-secondary btn-lg" id="btn-refresh">↻</button>
+        </div>
+        <div class="toolbar-info">
+          <!-- some default text so that it always takes up some space -->
+          <small><span id="msg-refreshed" style="color: darkgreen">Refresh</span></small>
+        </div>
+      </div>
+      <div class="toolbar-group">
+        <div class="toolbar-buttons">
+          <button class="btn btn-secondary btn-lg" id="app-prev">&lt;</button>
+          <button class="btn btn-secondary btn-lg" id="app-next">&gt;</button>
+        </div>
+        <div class="toolbar-info">
+          <div id="cur-app"></div>
+        </div>
+      </div>
+      <div class="toolbar-group">
+        <div class="toolbar-buttons">
+          <button class="btn btn-secondary btn-lg" id="round-prev">&lt;</button>
+          <button class="btn btn-secondary btn-lg" id="round-next">&gt;</button>
+        </div>
+        <div class="toolbar-info">
+          <span style="font-weight: bold">Round <span id="cur-round"></span></span>
+        </div>
+      </div>
+      <div class="toolbar-group">
+        <small><div>Download:</div></small>
+        <small><div>
+          <a href="{% url 'ExportWideLogin' session.code %}">Regular CSV</a><br>
+          <a href="{% url 'ExportWideLogin' session.code %}?format=csv_bom">Excel CSV</a>
+        </div></small>
+      </div>
+    </div>
+  </div>
+  <div id="server_error" class="alert alert-danger" style="display: none;">
+    <a href="#" class="close" data-bs-dismiss="alert">&times;</a>
+    Failed to connect to server
+  </div>
+{% endblock %}
+
+{% block internal_scripts %}
+  {{ super() }}
+  <script src="{% static 'otree/js/session_data.js' %}"></script>
+
+  <script>
+      let getElementById = (id) => document.getElementById(id);
+      let visibleTableIndex = 0;
+      let old_json = null;
+      let curAppSpan = getElementById('cur-app');
+      let curRoundSpan = getElementById('cur-round');
+      let tables = document.getElementsByClassName('results-table');
+      const round_numbers_by_subsession = {{ round_numbers_by_subsession|safe }};
+      const app_names_by_subsession = {{ app_names_by_subsession|safe }};
+      const TABLE_HEADERS = {{ tables|safe }}.map(t => t.headers);
+      const GROUP_COL_INDEX = {{ GROUP_COL_INDEX }};
+      let populatedTables = new Set(); // Track which tables have been populated
+      $(document).ready(function () {
+          $('#btn-refresh').click(function () {
+              ajax_json_results(true);
+          })
+          ajax_json_results(false);
+          initSortableHeaders();
+      });
+
+      function updateTableVisibility() {
+          for (let table of tables) {
+              table.style.display = 'none';
+          }
+          tables[visibleTableIndex].style.display = 'block';
+
+          // Lazy-load table data if not yet populated
+          if (old_json && !populatedTables.has(visibleTableIndex)) {
+              let table = tables[visibleTableIndex];
+              let data = old_json[visibleTableIndex];
+              populateTableBody(table.querySelector('tbody'), data);
+              populatedTables.add(visibleTableIndex);
+
+              // Re-apply any active sort
+              if (currentSortField[visibleTableIndex] !== undefined) {
+                  applySortWithoutToggle(visibleTableIndex, currentSortField[visibleTableIndex], currentSortDirection[visibleTableIndex]);
+              }
+          }
+
+          let curApp = app_names_by_subsession[visibleTableIndex];
+          let curRound = round_numbers_by_subsession[visibleTableIndex];
+          curAppSpan.innerText = curApp;
+          curRoundSpan.innerText = curRound;
+          getElementById('app-prev').disabled = curApp === app_names_by_subsession[0];
+          getElementById('app-next').disabled = curApp === app_names_by_subsession[app_names_by_subsession.length - 1];
+          getElementById('round-prev').disabled = visibleTableIndex === 0;
+          getElementById('round-next').disabled = visibleTableIndex === tables.length - 1;
+
+      }
+
+      updateTableVisibility();
+
+      getElementById('app-prev').addEventListener('click', function () {
+          let curApp = app_names_by_subsession[visibleTableIndex];
+          for (let i = visibleTableIndex - 1; i >= 0; i--) {
+              if (app_names_by_subsession[i] !== curApp && round_numbers_by_subsession[i] === 1) {
+                  visibleTableIndex = i;
+                  break;
+              }
+          }
+          updateTableVisibility();
+      })
+
+      getElementById('app-next').addEventListener('click', function () {
+          let curApp = app_names_by_subsession[visibleTableIndex];
+          for (let i = visibleTableIndex + 1; i < app_names_by_subsession.length; i++) {
+              if (app_names_by_subsession[i] !== curApp) {
+                  visibleTableIndex = i;
+                  break;
+              }
+          }
+          updateTableVisibility();
+      })
+
+      getElementById('round-prev').addEventListener('click', function () {
+          if (visibleTableIndex > 0) visibleTableIndex--;
+          updateTableVisibility();
+      })
+
+      getElementById('round-next').addEventListener('click', function () {
+          if (visibleTableIndex < tables.length - 1) visibleTableIndex++;
+          updateTableVisibility();
+      })
+
+
+      function ajax_json_results(isRefresh) {
+          let $msgRefreshed = $('#msg-refreshed');
+
+          $.ajax({
+              url: '{% url "SessionDataAjax" session.code %}',
+              type: 'GET',
+              contentType: "application/json",
+              error: function (jqXHR, textStatus) {
+                  $("div#server_error").show();
+              },
+              success: function (new_json) {
+                  $("div#server_error").hide();
+                  let changeDescriptions = [];
+
+                  if (old_json === null) {
+                      // FIRST LOAD: Only populate the visible table
+                      let table = tables[visibleTableIndex];
+                      let data = new_json[visibleTableIndex];
+                      populateTableBody(table.querySelector('tbody'), data);
+                      populatedTables.add(visibleTableIndex);
+                  } else {
+                      // REFRESH: Only update populated tables
+                      for (let tableIdx of populatedTables) {
+                          let table = tables[tableIdx];
+                          let headers = TABLE_HEADERS[tableIdx];
+                          let data = new_json[tableIdx];
+                          changeDescriptions = changeDescriptions.concat(updateDataTable($(table), data, old_json[tableIdx], headers));
+                      }
+
+                      // Re-apply any active sorts after data refresh
+                      for (let tableIdx of populatedTables) {
+                          if (currentSortField[tableIdx] !== undefined) {
+                              applySortWithoutToggle(tableIdx, currentSortField[tableIdx], currentSortDirection[tableIdx]);
+                          }
+                      }
+                  }
+
+                  old_json = new_json;
+
+                  if (!isRefresh) return;
+                  let numChanges = changeDescriptions.length;
+                  let msg;
+                  if (numChanges === 0) {
+                      msg = 'No updates';
+                  } else {
+                      msg = `Updated ${numChanges} row(s): ${changeDescriptions.join('; ')}`;
+                  }
+                  // keep it short to avoid linebreak/resizing issues
+                  if (msg.length > 100) {
+                      msg = truncateStringEllipsis(msg, 100);
+                  }
+                  $msgRefreshed.text(msg);
+                  // interrupt any ongoing fadeout
+                  $msgRefreshed.stop(true, true);
+                  $msgRefreshed.css('opacity', '1').css('visibility', 'visible');
+                  $msgRefreshed.animate({opacity: 0}, 30000, function() {
+                      $msgRefreshed.css('visibility', 'hidden');
+                  });
+              }
+          });
+      }
+  </script>
+{% endblock %}

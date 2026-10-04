@@ -1,0 +1,30 @@
+{% extends "global/Base.html" %}
+{% load otree %}
+
+{% block content %}
+<div class="game-header">
+    <h1>A Few Final Questions</h1>
+    <p>There are no right or wrong answers -- please answer honestly.</p>
+</div>
+
+<div class="choice-card">
+    <p class="mb-3">How well does each of the following statements describe you?</p>
+</div>
+
+{% for item in items %}
+<div class="choice-card">
+    <label class="form-label fw-semibold">{{ item.label }}</label>
+    <div class="choice-grid choice-grid-2" style="grid-template-columns: repeat(5, 1fr);">
+        {% for value, text in item.choices %}
+        <label class="choice-btn">
+            <input type="radio" name="{{ item.name }}" value="{{ value }}" required>
+            <span>{{ text }}</span>
+        </label>
+        {% endfor %}
+    </div>
+    {{ formfield_errors item.name }}
+</div>
+{% endfor %}
+
+<button type="submit" class="btn btn-primary btn-lg">Continue</button>
+{% endblock %}

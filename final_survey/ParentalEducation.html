@@ -1,0 +1,24 @@
+{% extends "global/Base.html" %}
+{% load otree %}
+
+{% block content %}
+<div class="game-header">
+    <h1>A Few Final Questions</h1>
+    <p>There are no right or wrong answers -- please answer honestly.</p>
+</div>
+
+<div class="choice-card">
+    <label class="form-label fw-semibold">{{ education_label }}</label>
+    <div class="choice-grid" style="grid-template-columns: repeat(2, 1fr);">
+        {% for value, text in education_choices %}
+        <label class="choice-btn">
+            <input type="radio" name="parental_education" value="{{ value }}" required>
+            <span>{{ text }}</span>
+        </label>
+        {% endfor %}
+    </div>
+    {{ formfield_errors 'parental_education' }}
+</div>
+
+<button type="submit" class="btn btn-primary btn-lg">Continue</button>
+{% endblock %}

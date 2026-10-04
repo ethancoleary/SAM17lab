@@ -1,0 +1,17 @@
+{% extends "global/Base.html" %}
+{% load otree %}
+
+{% block content %}
+<div class="game-header">
+    <h1>Question 1 complete</h1>
+
+</div>
+
+<div class="instruction-card">
+    <p>
+        Click on 'next' to move to question 2.
+    </p>
+</div>
+
+{% next_button %}
+{% endblock %}

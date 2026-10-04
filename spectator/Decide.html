@@ -1,0 +1,88 @@
+{% extends "global/Base.html" %}
+{% load otree %}
+
+{% block content %}
+<div class="game-header">
+    <h2>Spectator Decision</h2>
+    <p>Decide the final allocation of {{ total }} NOK between Worker A and Worker B.</p>
+</div>
+
+<div class="instruction-card">
+    <p>
+        You now need to decide the workers' final allocations. You can adjust these using the +/- 5 buttons.
+        When you are happy with your selection, click on next.
+    </p>
+    <p>
+        {% if player.treatment == 1 %}
+            {% if worker_a_initial == 200 %}
+            Recall, worker A received 200 because they got a <b>higher score in the task</b> than worker B.
+            {% else %}
+            Recall, worker B received 200 because they got a <b>higher score in the task</b> than worker A.
+            {% endif %}
+        {% endif %}
+        {% if player.treatment == 2 %}
+        Recall that the allocations were made <b>randomly</b>.
+        {% endif %}
+        {% if player.treatment == 3 %}
+        Recall that the allocations were determined <b>either according to the workers' previous scores in the task or due to random chance</b>.
+        {% endif %}
+    </p>
+</div>
+
+<div class="choice-card">
+    <div class="result-grid mb-3">
+        <div class="metric-card">
+            <div class="metric-label">Worker A final payment</div>
+            <div class="metric-value" id="worker-a-value">{{ worker_a_initial }} NOK</div>
+            <div class="d-flex justify-content-center gap-2 mt-2">
+                <button type="button" class="btn btn-outline-primary btn-sm" onclick="adjustAllocation(-5)">&minus;5</button>
+                <button type="button" class="btn btn-outline-primary btn-sm" onclick="adjustAllocation(5)">+5</button>
+            </div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-label">Worker B final payment</div>
+            <div class="metric-value" id="worker-b-value">{{ worker_b_initial }} NOK</div>
+            <div class="d-flex justify-content-center gap-2 mt-2">
+                <button type="button" class="btn btn-outline-primary btn-sm" onclick="adjustAllocation(5)">&minus;5</button>
+                <button type="button" class="btn btn-outline-primary btn-sm" onclick="adjustAllocation(-5)">+5</button>
+            </div>
+        </div>
+    </div>
+    <p class="text-muted small mb-0 text-center">
+        Use the buttons below either worker to move NOK between them in steps of 5.
+        The two payments always add up to {{ total }} NOK.
+    </p>
+</div>
+
+<form method="post">
+    <input type="hidden" id="id_final_a" name="final_a" value="{{ worker_a_initial }}">
+    {% next_button %}
+</form>
+
+<script>
+(function () {
+    const TOTAL = {{ total }};
+    let valueA = {{ worker_a_initial }};
+
+    const aValueEl = document.getElementById('worker-a-value');
+    const bValueEl = document.getElementById('worker-b-value');
+    const hiddenInput = document.getElementById('id_final_a');
+
+    function render() {
+        aValueEl.textContent = valueA + ' NOK';
+        bValueEl.textContent = (TOTAL - valueA) + ' NOK';
+        hiddenInput.value = valueA;
+    }
+
+    // Positive delta always means "+5 to Worker A" (and therefore -5 to
+    // Worker B); Worker B's buttons pass the inverted delta so clicking
+    // "+5" under Worker B increases B by moving 5 away from A.
+    window.adjustAllocation = function (delta) {
+        valueA = Math.max(0, Math.min(TOTAL, valueA + delta));
+        render();
+    };
+
+    render();
+})();
+</script>
+{% endblock %}

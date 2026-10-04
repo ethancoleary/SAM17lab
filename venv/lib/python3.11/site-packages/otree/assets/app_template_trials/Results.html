@@ -1,0 +1,15 @@
+{{ block title }}
+    Results
+{{ endblock }}
+
+{{ block content }}
+    <p>You made {{ player.num_errors }} errors. Here is the full raw data:</p>
+
+    <ol>
+        {{ for t in trials }}
+            <li>{{ t }}</li>
+        {{ endfor }}
+    </ol>
+
+    {{ next_button }}
+{{ endblock }}

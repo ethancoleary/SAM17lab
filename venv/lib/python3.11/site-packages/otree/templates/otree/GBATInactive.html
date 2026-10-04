@@ -1,0 +1,44 @@
+{% extends 'otree/Base_UserFacing.html' %}
+
+{% block head_title %}⏸️ {{ "Paused"|gettext }}{% endblock %}
+
+{% block internal_styles %}
+    {{ super() }}
+{% endblock %}
+{% comment %}this template is used by rooms, where js_vars does not exist{% endcomment %}
+{% block body_main %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="alert alert-warning text-center">
+                <p>
+                    {{'The button was not clicked within the requested time.'|gettext}}
+                    <br>
+                    {{'To return to the wait page, click the button below.'|gettext}}
+                </p>
+            </div>
+            <div class="text-center mb-4">
+                <button id="resume-button" class="btn btn-primary" style="font-size: 24px; padding: 20px 40px; width: 100%; border-radius: 15px;">
+                    {{"Return to wait page"|gettext}}
+                </button>
+            </div>            
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('resume-button').addEventListener('click', function() {
+    var urlParams = new URLSearchParams(window.location.search);
+    var returnUrl = urlParams.get('return_url');
+    if (returnUrl) {
+        window.location.href = returnUrl;
+    } else {
+        // Fallback if no return_url parameter
+        window.history.back();
+    }
+});
+</script>
+{% endblock %}
+
+{# remove internal scripts that are not needed for this page #}
+{% block internal_scripts %}{% endblock %}

@@ -1,0 +1,60 @@
+{{ block content }}
+
+<div class="fullscreen center-vh">
+    <div>
+        Is the word "<span ot-text="vars.trial.word"></span>" happy or sad?
+    </div>
+    <p>
+        <button type="button" name="response" value="happy" ot-kbd="KeyF" >
+            Happy (press "F")
+        </button>
+        <button type="button" name="response" value="sad" ot-kbd="KeyJ">
+            Sad (press "J")
+        </button>
+    </p>
+</div>
+
+{{ endblock }}
+
+{{ block scripts }}
+    <script>
+        {{ include_sibling 'trials.js' }}
+    </script>
+{{ endblock }}
+
+
+{{ block styles }}
+
+<style>
+    .fullscreen {
+        /* 100% of the window height */
+        height: 100vh;
+        padding: 20px;
+    }
+
+    /* vertical stack (column) */
+    .center-vh {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* vertical stack (column) */
+    .v-stack {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    /* horizontal stack (row) */
+    .h-stack {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+</style>
+
+{{ endblock }}

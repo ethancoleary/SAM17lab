@@ -1,0 +1,8 @@
+<table class="table">
+    {% for p_url in p_urls %}
+      <tr>
+        <td><strong>P{{ forloop.counter }}</strong></td>
+        <td><a href="{{ p_url }}" class="participant-link" target="_blank">{{ p_url }}</a></td>
+      </tr>
+    {% endfor %}
+  </table>

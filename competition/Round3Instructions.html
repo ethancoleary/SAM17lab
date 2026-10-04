@@ -1,0 +1,23 @@
+{% extends "global/Base.html" %}
+{% load otree %}
+
+{% block content %}
+<div class="game-header">
+    <h1>Game 6: Round 3</h1>
+
+</div>
+
+<div class="instruction-card">
+    <p>
+        Before doing the task a third time, you will choose whether to enter a
+        tournament again, or take a guaranteed piece-rate payment instead.
+    </p>
+    <p class="mb-0">
+        If you enter the tournament, your new score will be compared against the
+        <strong>Round 2 scores</strong> of the other participants in your group
+        (not their scores in this round).
+    </p>
+</div>
+
+{% next_button %}
+{% endblock %}

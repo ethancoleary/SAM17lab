@@ -1,0 +1,38 @@
+{% extends "global/Base.html" %}
+{% load otree %}
+
+{% block content %}
+<div class="game-header">
+    <h1>Game 6: Round 1</h1>
+    <p></p>
+</div>
+
+<div class="instruction-card">
+    <p>
+        You already completed the addition task for round 1 during the interlude section.
+    </p>
+    <p class="mb-0">
+        If round 1 is chosen for payment then you will earn 20 NOK per correct answer during the interlude.
+    </p>
+</div>
+
+<div class="instruction-card">
+    <h5 class="mb-2">Reminder</h5>
+    <hr>
+    <p class="mb-0">
+        As a reminder, <b>you stated that you believed you submitted {{ player.participant.guessed_score }} correct answer during the task</b>.
+    </p>
+</div>
+
+{% if player.participant.comp_treatment == 1 %}
+<div class="instruction-card">
+    <h5 class="mb-2">Useful information</h5>
+    <hr>
+    <p class="mb-0">
+        Among all participants in the room with you right now, <b>the highest score obtained during the first round was {{ player.participant.top_score_in_session }}</b>.
+    </p>
+</div>
+{% endif %}
+
+{% next_button %}
+{% endblock %}

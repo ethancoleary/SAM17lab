@@ -1,0 +1,189 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version:  oTree\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-10-06 19:16+0800\n"
+"PO-Revision-Date: 2020-01-19 16:14+0100\n"
+"Last-Translator: Linda Dezső <linda.dezso@gmail.com>\n"
+"Language: hu\n"
+"Language-Team: \n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.11.0\n"
+
+#. Translators: A player's default chat nickname,
+#: ../otree/chat.py:45
+#, python-brace-format
+msgid "Participant {id_in_group}"
+msgstr "{id_in_group}. résztvevő"
+
+#. Translators: the name you see in chat for yourself, for example:
+#. John (Me)
+#: ../otree/chat.py:61
+#, python-brace-format
+msgid "{nickname} (Me)"
+msgstr "{nickname} (Én)"
+
+#: ../otree/constants.py:79
+msgid "This field is required."
+msgstr "Ezt a mezőt kötelező kitölteni."
+
+#. Translators: display a number of points,
+#. like "1 point", "2 points", ...
+#. See "Plural-Forms" above for pluralization rules
+#. in this language.
+#. Explanation at http://bit.ly/1IurMu7
+#. In most languages, msgstr[0] is singular,
+#. and msgstr[1] is plural
+#. the {} represents the number;
+#. don't forget to include it in your translation
+#: ../otree/currency.py:202
+msgid "{} point"
+msgid_plural "{} points"
+msgstr[0] "{} pont"
+msgstr[1] "{} pontok"
+
+#: ../otree/forms/forms.py:200
+msgid "Yes"
+msgstr "Igen"
+
+#: ../otree/forms/forms.py:200
+msgid "No"
+msgstr "Nem"
+
+#: ../otree/forms/multistring.py:67
+#, python-format
+msgid "'%(value)s' is not a valid choice for this field"
+msgstr "'%(value)s' nem érvényes választás ehhez a mezőhöz"
+
+#. Translators: the label next to a "points" input field
+#: ../otree/forms/widgets.py:84
+msgid "points"
+msgstr "pontok"
+
+#: ../otree/templates/otree/GBATInactive.html:3
+msgid "Paused"
+msgstr "Szüneteltetve"
+
+#: ../otree/templates/otree/GBATInactive.html:15
+msgid "The button was not clicked within the requested time."
+msgstr "A gombra nem kattintottak a megadott időn belül."
+
+#: ../otree/templates/otree/GBATInactive.html:17
+msgid "To return to the wait page, click the button below."
+msgstr "A várakozási oldalra való visszatéréshez kattintson az alábbi gombra."
+
+#: ../otree/templates/otree/GBATInactive.html:22
+msgid "Return to wait page"
+msgstr "Vissza a várakozási oldalra"
+
+#: ../otree/templates/otree/Page.html:30
+msgid "Please fix the errors."
+msgstr "Kérjük, javítsa ki az oldalon lévő hibákat."
+
+#: ../otree/templates/otree/RoomWelcomePage.html:6
+#: ../otree/templates/otree/RoomWelcomePage.html:13
+msgid "Welcome"
+msgstr "Üdvözöljük"
+
+#: ../otree/templates/otree/RoomWelcomePage.html:18
+msgid "This participant label was not found"
+msgstr "Érvénytelen; próbája újra."
+
+#: ../otree/templates/otree/RoomWelcomePage.html:19
+msgid "Participant label:"
+msgstr "Résztvevői címke:"
+
+#: ../otree/templates/otree/RoomWelcomePage.html:25
+msgid "Click the button to start."
+msgstr "Kattintson a gombra a kezdéshez."
+
+#: ../otree/templates/otree/RoomWelcomePage.html:27
+msgid "Start"
+msgstr "Kezdés"
+
+#: ../otree/templates/otree/WaitPage.html:68
+msgid "Click the below button within ${secondsLeftSpan} seconds."
+msgstr "Kattintson az alábbi gombra ${secondsLeftSpan} másodpercen belül."
+
+#: ../otree/templates/otree/WaitPage.html:75
+msgid "Please confirm"
+msgstr "Kérjük, erősítse meg"
+
+#: ../otree/templates/otree/WaitPageBase.html:85
+msgid "An error occurred."
+msgstr ""
+"Hiba történt. Kérjük, ellenőrizze a log-fájlokat vagy forduljon az "
+"adminisztrátorhoz segítségért."
+
+#: ../otree/templates/otree/WaitPageBase.html:89
+msgid "Are you still there?"
+msgstr "Még mindig itt vagy?"
+
+#: ../otree/templates/otree/WaitPageBase.html:92
+msgid "I'm still active"
+msgstr "Még mindig aktív vagyok"
+
+#: ../otree/templates/otree/tags/chat.html:9
+msgid "Send"
+msgstr "Elküldés"
+
+#. Translators: the text of the 'next' button
+#: ../otree/templating/nodes.py:849
+msgid "Next"
+msgstr "Tovább"
+
+#. Translators: the text of the 'back' button
+#: ../otree/templating/nodes.py:864
+msgid "Back"
+msgstr "Vissza"
+
+#: ../otree/views/abstract.py:168
+msgid "Powered by {product_name}"
+msgstr "Támogatja az {product_name}"
+
+#: ../otree/views/abstract.py:903
+msgid "Time left to complete this page:"
+msgstr "Az oldal kitöltésére maradt idő:"
+
+#. Translators: the default title of a wait page
+#: ../otree/views/abstract.py:932 ../otree/views/participant.py:320
+msgid "Please wait"
+msgstr "Kérjük, várjon"
+
+#: ../otree/views/abstract.py:1309
+msgid "Waiting to form a group with other participants."
+msgstr "Várakozás a csoport létrehozására más résztvevőkkel."
+
+#: ../otree/views/abstract.py:1313
+msgid "Waiting for the other participants."
+msgstr "Kérjük, várjon, amíg a többi résztvevő is készen áll."
+
+#: ../otree/views/abstract.py:1315
+msgid "Waiting for the other participant."
+msgstr "Kérjük, várjon, amíg a többi résztvevő is készen áll."
+
+#. Translators: for example this is shown if you create a session for 10
+#. participants. The 11th person to click will get this message
+#. It means there is no space for you.
+#: ../otree/views/participant.py:37
+msgid "Session is full."
+msgstr "A munkamenet megtelt."
+
+#: ../otree/views/participant.py:321
+msgid "Waiting for your session to begin"
+msgstr "Kérjük, várjon, amíg a kísérlete elkezdödik"
+
+#~ msgid "Please enter your participant label."
+#~ msgstr "Kerjük, adja meg kísérleti azonosítóját."
+
+#~ msgid "Click the below button within ${secondsLeft} seconds."
+#~ msgstr ""
+

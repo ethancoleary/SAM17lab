@@ -1,0 +1,26 @@
+{% extends "global/Base.html" %}
+{% load otree %}
+
+{% block content %}
+<div class="game-header">
+    <h1>Economics and Psychology Lab</h1>
+    <p>Welcome!</p>
+</div>
+
+<div class="instruction-card">
+    <p>
+        In this experiment you will take part in several short games and questionnaires.
+    </p>
+    <p>
+        Please read the instructions on each page carefully before making your decision.
+        Your decisions are confidential and will be analysed anonymously.
+    </p>
+    <p>
+        Throughout the experiment, you will be asked to make decisions which involve money.
+        This is a hypothetical statement, no money will be distributed.
+        However, we ask that you make the decisions <b>as if</b> you were to be paid the amount quoted.
+    </p>
+</div>
+
+{% next_button %}
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "global/Base.html" %}
+{% load otree %}
+
+{{ block content }}
+<div class="game-header">
+    <h1>Thank You</h1>
+    <p>You have completed the study.</p>
+</div>
+
+<div class="instruction-card text-center">
+    <p>
+        Thank you for your participation. You will now be redirected to a short,
+        separate form to leave your email address (for payment purposes only).
+        This form is <strong>not linked</strong> to any of your answers in this study.
+    </p>
+    <p class="mb-0">
+        You will be redirected automatically in <span id="countdown">3</span> seconds...
+    </p>
+</div>
+
+<script>
+    var redirectUrl = "{{ redirect_url }}";
+
+    var secondsLeft = 3;
+    var countdownEl = document.getElementById('countdown');
+
+    var timer = setInterval(function () {
+        secondsLeft -= 1;
+        if (countdownEl) {
+            countdownEl.textContent = secondsLeft;
+        }
+        if (secondsLeft <= 0) {
+            clearInterval(timer);
+            window.location.href = redirectUrl;
+        }
+    }, 1000);
+</script>
+{{ endblock }}

@@ -1,0 +1,430 @@
+from typing import Union, List, Any, Optional, TypeVar, Type
+from decimal import Decimal
+from otree.currency import RealWorldCurrency, Currency
+from otree.database import AnyModel
+from typing import Callable
+
+class Currency(Currency):
+    """
+    PyCharm autocomplete seems to require that I explicitly define the class in this file
+    (if I import, it says the reference to Currency is not found)
+    """
+
+cu = Currency
+
+class DecimalUnit(Decimal):
+    storage_places: int
+    input_places: int
+    input_unit_label: str
+    output_min_places: int
+    output_max_places: int
+
+    @staticmethod
+    def output(formatted, raw):
+        pass
+
+def currency_range(first, last, increment) -> List[Currency]:
+    pass
+
+from __future__ import annotations
+
+from typing import Any, Generic, Iterable, Type, TypeVar, overload
+from decimal import Decimal
+
+# Your own types (forward-declared for the stub)
+class Currency: ...
+class DecimalUnit: ...
+
+_T = TypeVar("_T")
+
+# 2025-11-16: vscode infers instance attributes like player.x as lists apparently...
+# it gives autocompletions like .append(), .pop()
+# and the tooltip calls it a 'function'
+# don't know why... but it's not really causing problems.
+
+class Field(Generic[_T]):
+    @overload
+    def __get__(self, instance: None, owner: type[Any]) -> Field[_T]: ...
+    @overload
+    def __get__(self, instance: Any, owner: type[Any]) -> _T: ...
+    def __set__(self, instance: Any, value: _T) -> None: ...
+
+AnyNumber = int | float | Decimal | Currency
+
+class models:
+    def __getattr__(self, item: str) -> Any: ...
+
+    class BooleanField(Field[bool]):
+        def __init__(
+            self,
+            *,
+            choices: Iterable | None = None,
+            widget: Any | None = None,
+            initial: bool | None = None,
+            label: str | None = None,
+            doc: str = "",
+            blank: bool = False,
+        ) -> None: ...
+
+    class StringField(Field[str]):
+        def __init__(
+            self,
+            *,
+            choices: Iterable | None = None,
+            widget: Any | None = None,
+            initial: str | None = None,
+            label: str | None = None,
+            doc: str = "",
+            max_length: int = 10000,
+            blank: bool = False,
+        ) -> None: ...
+
+    class LongStringField(Field[str]):
+        def __init__(
+            self,
+            *,
+            initial: str | None = None,
+            label: str | None = None,
+            doc: str = "",
+            max_length: int | None = None,
+            blank: bool = False,
+        ) -> None: ...
+
+    class IntegerField(Field[int]):
+        def __init__(
+            self,
+            *,
+            choices: Iterable | None = None,
+            widget: Any | None = None,
+            initial: int | None = None,
+            label: str | None = None,
+            doc: str = "",
+            min: int | None = None,
+            max: int | None = None,
+            blank: bool = False,
+        ) -> None: ...
+
+    class FloatField(Field[float]):
+        def __init__(
+            self,
+            *,
+            choices: Iterable | None = None,
+            widget: Any | None = None,
+            initial: float | None = None,
+            label: str | None = None,
+            doc: str = "",
+            min: float | None = None,
+            max: float | None = None,
+            blank: bool = False,
+        ) -> None: ...
+
+    class CurrencyField(Field[Currency]):
+        def __init__(
+            self,
+            *,
+            choices: Iterable | None = None,
+            widget: Any | None = None,
+            initial: AnyNumber | None = None,
+            label: str | None = None,
+            doc: str = "",
+            min: AnyNumber | None = None,
+            max: AnyNumber | None = None,
+            blank: bool = False,
+        ) -> None: ...
+
+    class DecimalField(Field[Decimal]):
+        def __init__(
+            self,
+            *,
+            unit: Type[DecimalUnit],
+            choices: Iterable | None = None,
+            widget: Any | None = None,
+            initial: AnyNumber | None = None,
+            label: str | None = None,
+            doc: str = "",
+            min: AnyNumber | None = None,
+            max: AnyNumber | None = None,
+            blank: bool = False,
+        ) -> None: ...
+
+    @staticmethod
+    def Link(to) -> Any:
+        pass
+
+class widgets:
+    def __getattr__(self, item):
+        pass
+
+    # don't need HiddenInput because you can just write <input type="hidden" ...>
+    # and then you know the element's selector
+    class Checkbox:
+        pass
+
+    class RadioSelect:
+        pass
+
+    class RadioSelectHorizontal:
+        pass
+
+class BaseConstants:
+    pass
+
+class BaseSubsession:
+    # mark it as Any so that PyCharm can infer custom fields based on usage instead
+    session: Any
+    round_number: int
+    def get_groups(self) -> List[GroupTV]:
+        pass
+
+    def get_group_matrix(self) -> List[List[int]]:
+        pass
+
+    def set_group_matrix(self, group_matrix: List[List[int]]):
+        pass
+
+    def get_players(self) -> List[PlayerTV]:
+        pass
+
+    def in_previous_rounds(self: SubsessionTV) -> List[SubsessionTV]:
+        pass
+
+    def in_all_rounds(self: SubsessionTV) -> List[SubsessionTV]:
+        pass
+
+    def in_round(self: SubsessionTV, round_number) -> SubsessionTV:
+        pass
+
+    def in_rounds(self: SubsessionTV, first, last) -> List[SubsessionTV]:
+        pass
+
+    def group_like_round(self, round_number: int):
+        pass
+
+    def group_randomly(self, fixed_id_in_group: bool = False):
+        pass
+
+    def field_maybe_none(self, field_name: str):
+        pass
+
+# Using TypeVar instead of the BaseSubsession seems to make PyCharm
+# allow BaseSubsession be passed to a function marked as taking a Subsession arg
+SubsessionTV = TypeVar("SubsessionTV", bound=BaseSubsession)
+
+class BaseGroup:
+    session: Any
+    subsession: BaseSubsession
+    round_number: int
+    id_in_subsession: int
+    def get_players(self) -> List[PlayerTV]:
+        pass
+
+    def get_player_by_role(self, role) -> PlayerTV:
+        pass
+
+    def get_player_by_id(self, id_in_group) -> PlayerTV:
+        pass
+
+    def in_previous_rounds(self: GroupTV) -> List[GroupTV]:
+        pass
+
+    def in_all_rounds(self: GroupTV) -> List[GroupTV]:
+        pass
+
+    def in_round(self: GroupTV, round_number) -> GroupTV:
+        pass
+
+    def in_rounds(self: GroupTV, first: int, last: int) -> List[GroupTV]:
+        pass
+
+    def field_maybe_none(self, field_name: str):
+        pass
+
+    def field_display(self, field_name: str):
+        pass
+
+GroupTV = TypeVar("GroupTV", bound=BaseGroup)
+
+class BasePlayer:
+    id_in_group: int
+    # remove this from autocomplete because it crowds out id_in_group which is much more relevant
+    # id_in_subsession: int
+    payoff: Currency
+    participant: Any
+    session: Any
+    group: GroupTV
+    subsession: BaseSubsession
+    round_number: int
+    role: str
+    def in_previous_rounds(self: PlayerTV) -> List[PlayerTV]:
+        pass
+
+    def in_all_rounds(self: PlayerTV) -> List[PlayerTV]:
+        pass
+
+    def get_others_in_group(self: PlayerTV) -> List[PlayerTV]:
+        pass
+
+    def get_others_in_subsession(self: PlayerTV) -> List[PlayerTV]:
+        pass
+
+    def in_round(self: PlayerTV, round_number) -> PlayerTV:
+        pass
+
+    def in_rounds(self: PlayerTV, first, last) -> List[PlayerTV]:
+        pass
+
+    def field_maybe_none(self, field_name: str):
+        pass
+
+    def field_display(self, field_name: str):
+        pass
+
+PlayerTV = TypeVar("PlayerTV", bound=BasePlayer)
+
+T_extramodel = TypeVar('T_extramodel')
+
+class ExtraModel:
+    @classmethod
+    def filter(cls: Type[T_extramodel], **kwargs) -> List[T_extramodel]:
+        pass
+
+    @classmethod
+    def create(cls: Type[T_extramodel], **kwargs) -> T_extramodel:
+        pass
+    id: int
+
+class WaitPage:
+    wait_for_all_groups = False
+    group_by_arrival_time = False
+    title_text: str
+    body_text: str
+    template_name: str
+    preserve_unsubmitted_inputs: bool
+
+    round_number: int
+    @staticmethod
+    def is_displayed(player: Player):
+        pass
+
+    @staticmethod
+    def js_vars(player: Player):
+        pass
+
+    @staticmethod
+    def vars_for_template(player: Player):
+        pass
+
+    @staticmethod
+    def app_after_this_page(player: Player, upcoming_apps):
+        pass
+
+    @staticmethod
+    def after_all_players_arrive(group: Group):
+        pass
+
+    @staticmethod
+    def live_method(player: Player, data):
+        pass
+
+class Page:
+    round_number: int
+    template_name: str
+    timeout_seconds: int
+    timer_text: str
+    form_model: str
+    form_fields: List[str]
+    preserve_unsubmitted_inputs: bool
+    allow_back_button: bool
+
+    @staticmethod
+    def live_method(player: Player, data):
+        pass
+
+    @staticmethod
+    def get_form_fields(player: Player):
+        pass
+
+    @staticmethod
+    def vars_for_template(player: Player):
+        pass
+
+    @staticmethod
+    def js_vars(player: Player):
+        pass
+
+    @staticmethod
+    def before_next_page(player: Player, timeout_happened):
+        pass
+
+    @staticmethod
+    def is_displayed(player: Player):
+        pass
+
+    @staticmethod
+    def error_message(player: Player, values):
+        pass
+
+    @staticmethod
+    def get_timeout_seconds(player: Player):
+        pass
+
+    @staticmethod
+    def app_after_this_page(player: Player, upcoming_apps):
+        pass
+
+class Bot:
+    html: str
+    case: Any
+    cases: List
+    participant: Any
+    session: Any
+    round_number: int
+    player: PlayerTV
+    group: GroupTV
+    subsession: SubsessionTV
+
+def Submission(
+    PageClass, post_data: dict = {}, *, check_html=True, timeout_happened=False
+):
+    pass
+
+def SubmissionMustFail(
+    PageClass, post_data: dict = {}, *, check_html=True, error_fields=[]
+):
+    pass
+
+def expect(*args):
+    pass
+
+# if i use Type[AnyModel] it doesn't get recognized as a superclass
+# app_models = Union[Type[ExtraModel], Type[BasePlayer], Type[BaseGroup], Type[BaseSubsession]]
+app_models = Union[
+    Type[ExtraModel], Type[BasePlayer], Type[BaseGroup], Type[BaseSubsession]
+]
+
+def read_csv(path: str, type_model: app_models) -> List[dict]:
+    pass
+
+def render_template(path: str, *, player, C, vars: dict):
+    pass
+
+__all__ = [
+    "Currency",
+    "cu",
+    "currency_range",
+    "models",
+    "widgets",
+    "BaseConstants",
+    "BaseSubsession",
+    "BaseGroup",
+    "BasePlayer",
+    "ExtraModel",
+    "WaitPage",
+    "Page",
+    "Bot",
+    "Submission",
+    "SubmissionMustFail",
+    "expect",
+    "read_csv",
+    "render_template",
+]

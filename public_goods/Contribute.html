@@ -1,0 +1,154 @@
+{% extends "global/Base.html" %}
+{% load otree %}
+
+{% block content %}
+{% if player.participant.pgg_treatment == 0 %}
+<div class="game-header">
+    <h2>Your Contribution Decision</h2>
+    <p>Decide how much of your {{ endowment }} NOK to contribute to the project.</p>
+</div>
+
+<div class="instruction-card">
+    <p class="mb-0">
+        You are in a group of {{ group_size }} people. You have
+        <strong>{{ endowment }} NOK</strong>.
+    </p>
+</div>
+
+<div class="choice-card">
+    <label for="id_contribution" class="form-label fw-bold">
+        How much do you want to contribute to the project?
+        (enter a whole number from 0 to {{ endowment }})
+    </label>
+    <input
+        type="number"
+        id="id_contribution"
+        name="contribution"
+        class="form-control form-control-lg"
+        style="max-width: 220px;"
+        min="0"
+        max="{{ endowment }}"
+        step="1"
+        inputmode="numeric"
+        autocomplete="off"
+        oninput="updateContribution(this.value)"
+        required
+    >
+</div>
+
+<div class="result-grid mb-4">
+    <div class="metric-card">
+        <div class="metric-label">Your contribution</div>
+        <div class="metric-value" id="contribution-value">0</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">You keep</div>
+        <div class="metric-value" id="keep-value">{{ endowment }}</div>
+    </div>
+</div>
+
+<div class="instruction-card">
+    <p>
+        Each of the other 3 people in your group will make the same decision.
+    </p>
+    <p class="mb-0">
+        You will receive an equal share of the final project balance, which is the
+        total contributions multiplied by {{ multiplier }}.
+    </p>
+</div>
+{% else %}
+<div class="game-header">
+    <h2>Decide how much to give up</h2>
+    <p>Decide how much of your {{ endowment }} NOK to give up to the project.</p>
+</div>
+
+<div class="instruction-card">
+    <p class="mb-0">
+        You are in a group of {{ group_size }} people. You have
+        <strong>{{ endowment }} NOK</strong>.
+    </p>
+</div>
+
+<div class="choice-card">
+    <label for="id_contribution" class="form-label fw-bold">
+        How much do you want to give up to the project?
+        (enter a whole number from 0 to {{ endowment }})
+    </label>
+    <input
+        type="number"
+        id="id_contribution"
+        name="contribution"
+        class="form-control form-control-lg"
+        style="max-width: 220px;"
+        min="0"
+        max="{{ endowment }}"
+        step="1"
+        inputmode="numeric"
+        autocomplete="off"
+        oninput="updateContribution(this.value)"
+        required
+    >
+</div>
+
+<div class="result-grid mb-4">
+    <div class="metric-card">
+        <div class="metric-label">You give up</div>
+        <div class="metric-value" id="contribution-value">0</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">You keep</div>
+        <div class="metric-value" id="keep-value">{{ endowment }}</div>
+    </div>
+</div>
+
+<div class="instruction-card">
+    <p>
+        Each of the other 3 people in your group will make the same decision.
+    </p>
+    <p class="mb-0">
+        You will receive an equal share of the final project balance, which is the
+        total amounts given up, multiplied by {{ multiplier }}.
+    </p>
+</div>
+{% endif %}
+
+{% next_button %}
+
+<script>
+const ENDOWMENT = {{ endowment }};
+const MULTIPLIER = {{ multiplier }};
+const GROUP_SIZE = {{ group_size }};
+
+function updateContribution(value) {
+    const input = document.getElementById('id_contribution');
+    let contribution = parseInt(value, 10);
+
+    if (value === '' || isNaN(contribution)) {
+        document.getElementById('contribution-value').textContent = 0;
+        document.getElementById('keep-value').textContent = ENDOWMENT;
+        input.setCustomValidity('');
+        return;
+    }
+
+    if (contribution < 0 || contribution > ENDOWMENT || !Number.isInteger(contribution)) {
+        input.setCustomValidity('Please enter a whole number between 0 and ' + ENDOWMENT + '.');
+    } else {
+        input.setCustomValidity('');
+    }
+
+    contribution = Math.max(0, Math.min(ENDOWMENT, contribution));
+    const kept = ENDOWMENT - contribution;
+
+    document.getElementById('contribution-value').textContent = contribution;
+    document.getElementById('keep-value').textContent = kept;
+}
+
+document.getElementById('id_contribution').addEventListener('keydown', function (e) {
+    const allowedKeys = ['Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight', 'Enter'];
+    if (allowedKeys.includes(e.key)) return;
+    if (!/^[0-9]$/.test(e.key)) {
+        e.preventDefault();
+    }
+});
+</script>
+{% endblock %}

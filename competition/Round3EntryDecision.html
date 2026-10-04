@@ -1,0 +1,49 @@
+{% extends "global/Base.html" %}
+{% load otree %}
+
+{% block content %}
+<div class="game-header">
+    <h1>Enter the Tournament?</h1>
+    <p>Choose how you want to be paid for round 3.</p>
+</div>
+
+{% if player.participant.comp_treatment == 1 %}
+<div class="instruction-card">
+
+    <p>Recall: among all participants in the room with you right now, <b>the highest score obtained during the first round was {{ player.participant.top_score_in_session }}</b></p>
+
+</div>
+{% endif %}
+
+<form method="post">
+    <div class="row g-3 mb-3">
+        <div class="col-md-6">
+            <label class="choice-btn-tall w-100 h-100">
+                <input type="radio" name="enter_tournament" value="False" required>
+                <span>
+                    <strong>Take the piece-rate</strong><br>
+                    Earn <span class="payoff-good">20 NOK</span> per correct
+                    answer, guaranteed.
+                </span>
+            </label>
+        </div>
+        <div class="col-md-6">
+            <label class="choice-btn-tall w-100 h-100">
+                <input type="radio" name="enter_tournament" value="True" required>
+                <span>
+                    <strong>Enter the tournament</strong><br>
+                    Earn <span class="payoff-good">80 NOK</span> per correct answer
+                    if you beat the round 2 scores of the others in your group,
+                    otherwise <span class="payoff-loss">0 NOK</span>.
+                </span>
+            </label>
+        </div>
+    </div>
+
+    {% if form.enter_tournament.errors %}
+    <div class="alert alert-danger">{{ form.enter_tournament.errors }}</div>
+    {% endif %}
+
+    {% next_button %}
+</form>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "global/Base.html" %}
+{% load otree %}
+
+{% block content %}
+<div class="game-header">
+    <h1>A Few Final Questions</h1>
+    <p>There are no right or wrong answers -- please answer honestly.</p>
+</div>
+
+<div class="choice-card">
+    <label class="form-label fw-semibold">How willing are you to take risks, in general?</label>
+    <p class="text-muted mb-2">
+        Please choose a number on the following scale.<br><br>
+    </p>
+    <div class="choice-grid" style="grid-template-columns: repeat(11, 1fr); gap: 8px;">
+        {% for value in scale_values %}
+        <label class="choice-btn" style="padding: 10px 4px; font-size: 0.9rem;">
+            <input type="radio" name="risk_aversion" value="{{ value }}" required>
+            <span>{{ value }}</span>
+        </label>
+        {% endfor %}
+    </div>
+    <div class="d-flex justify-content-between text-muted mt-1" style="font-size: 0.85rem;">
+        <span class="text-start">Not at all willing to take risks</span>
+        <span class="text-end">Very willing to take risks</span>
+    </div>
+    {{ formfield_errors 'risk_aversion' }}
+</div>
+
+<button type="submit" class="btn btn-primary btn-lg">Continue</button>
+{% endblock %}
