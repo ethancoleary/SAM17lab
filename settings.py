@@ -17,7 +17,7 @@ SESSION_CONFIGS = [
             'final_survey'
 
         ],
-        group_size=4,  # default value shown in the admin form
+        group_size=45,  # default value shown in the admin form
     ),
 ]
 
