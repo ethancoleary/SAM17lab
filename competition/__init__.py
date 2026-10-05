@@ -37,7 +37,7 @@ only in FinalResults at the very end.
 
 class C(BaseConstants):
     NAME_IN_URL = 'competition'
-    PLAYERS_PER_GROUP = 4
+    PLAYERS_PER_GROUP = None
     NUM_ROUNDS = 1
 
     TASK_SECONDS = 60
@@ -66,16 +66,6 @@ class Player(BasePlayer):
     r2score = models.IntegerField(initial=0)
     r3score = models.IntegerField(initial=0)
 
-
-def get_group_r2_scores(player: Player):
-    """Returns {participant_code: r2score} for this player's groupmates
-    (excluding the player). Since there is only one oTree round now, this
-    is a plain lookup across the group -- no player.in_round() needed."""
-    return {
-        p.participant.code: p.r2score
-        for p in player.group.get_players()
-        if p.participant.code != player.participant.code
-    }
 
 
 
