@@ -67,7 +67,7 @@ class Password(Page):
 
     @staticmethod
     def error_message(player, values):
-        if values['password'].strip() != '0510':
+        if values['password'].strip() != '0710':
             return 'Incorrect password. Please try again.'
 
 class Welcome(Page):
