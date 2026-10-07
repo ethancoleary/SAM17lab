@@ -27,6 +27,20 @@ SESSION_CONFIG_DEFAULTS = dict(
     doc="",
 )
 
+ROOMS = [
+    dict(
+        name='econ_psych_lab',
+        display_name='Economics and Psychology Lab',
+        # No label file: anyone with the room-wide URL can join
+    ),
+    dict(
+        name='econ_psych_lab_labeled',
+        display_name='Economics and Psychology Lab (labeled)',
+        participant_label_file='_rooms/econ_psych_lab.txt',
+        use_secure_urls=True,
+    ),
+]
+
 PARTICIPANT_FIELDS = [
     'spectator_final_a',
     'spectator_final_b',
@@ -50,7 +64,6 @@ LANGUAGE_CODE = 'en'
 REAL_WORLD_CURRENCY_CODE = 'NOK'
 USE_POINTS = True
 
-ROOMS = []
 
 ADMIN_USERNAME = 'admin'
 ADMIN_PASSWORD = environ.get('OTREE_ADMIN_PASSWORD')
